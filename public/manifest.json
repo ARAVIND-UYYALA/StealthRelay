@@ -1,0 +1,24 @@
+{
+  "name": "Stealth Relay",
+  "short_name": "StealthRelay",
+  "description": "End-to-End Secure Communications Node — Chat, Video Calls & File Vault",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06080f",
+  "theme_color": "#6382ff",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

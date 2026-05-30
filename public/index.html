@@ -1,0 +1,2165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stealth Relay | Secure Communications Node</title>
+    <meta name="description" content="End-to-end encrypted secure communications platform with real-time chat, video calls, and file vault.">
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#06080f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Stealth Relay">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        /* ================================================
+           DESIGN SYSTEM — CSS CUSTOM PROPERTIES
+           ================================================ */
+        :root {
+            --bg-deep: #06080f;
+            --bg-base: #0b0f1a;
+            --bg-surface: rgba(15, 23, 42, 0.65);
+            --bg-surface-solid: #0f172a;
+            --bg-elevated: rgba(22, 33, 55, 0.55);
+            --bg-input: rgba(8, 12, 24, 0.7);
+
+            --border-subtle: rgba(56, 79, 125, 0.25);
+            --border-glow: rgba(99, 130, 255, 0.15);
+            --border-active: rgba(99, 130, 255, 0.45);
+
+            --text-primary: #e8ecf4;
+            --text-secondary: #8b98b8;
+            --text-muted: #5a6580;
+            --text-inverse: #06080f;
+
+            --accent-blue: #6382ff;
+            --accent-blue-soft: rgba(99, 130, 255, 0.12);
+            --accent-cyan: #22d3ee;
+            --accent-green: #34d399;
+            --accent-green-soft: rgba(52, 211, 153, 0.12);
+            --accent-red: #f87171;
+            --accent-red-soft: rgba(248, 113, 113, 0.1);
+            --accent-purple: #a78bfa;
+            --accent-purple-soft: rgba(167, 139, 250, 0.1);
+            --accent-amber: #fbbf24;
+            --accent-amber-soft: rgba(251, 191, 36, 0.1);
+
+            --gradient-brand: linear-gradient(135deg, #6382ff 0%, #a78bfa 50%, #22d3ee 100%);
+            --gradient-card: linear-gradient(145deg, rgba(15, 23, 42, 0.8), rgba(10, 16, 32, 0.6));
+
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.25);
+            --shadow-lg: 0 16px 48px rgba(0,0,0,0.35);
+            --shadow-glow: 0 0 20px rgba(99, 130, 255, 0.08);
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* ================================================
+           BASE RESET & GLOBALS
+           ================================================ */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ================================================
+           ANIMATED BACKGROUND
+           ================================================ */
+        .bg-mesh {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bg-mesh::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(99, 130, 255, 0.06) 0%, transparent 70%);
+            top: -100px;
+            right: -100px;
+            animation: meshFloat1 20s ease-in-out infinite;
+        }
+
+        .bg-mesh::after {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(167, 139, 250, 0.05) 0%, transparent 70%);
+            bottom: -100px;
+            left: -100px;
+            animation: meshFloat2 25s ease-in-out infinite;
+        }
+
+        @keyframes meshFloat1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-80px, 60px) scale(1.1); }
+            66% { transform: translate(40px, -40px) scale(0.95); }
+        }
+
+        @keyframes meshFloat2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(80px, -60px) scale(1.15); }
+        }
+
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image:
+                linear-gradient(rgba(99, 130, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 130, 255, 0.015) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        /* ================================================
+           TOAST NOTIFICATION SYSTEM
+           ================================================ */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transform: translateX(120%);
+            animation: toastSlideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            max-width: 380px;
+        }
+
+        .toast.removing {
+            animation: toastSlideOut 0.3s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
+        }
+
+        .toast.success { border-left: 3px solid var(--accent-green); }
+        .toast.error { border-left: 3px solid var(--accent-red); }
+        .toast.info { border-left: 3px solid var(--accent-blue); }
+        .toast.warning { border-left: 3px solid var(--accent-amber); }
+
+        .toast-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        @keyframes toastSlideIn {
+            to { transform: translateX(0); }
+        }
+        @keyframes toastSlideOut {
+            to { transform: translateX(120%); opacity: 0; }
+        }
+
+        /* ================================================
+           APP LAYOUT SHELL
+           ================================================ */
+        .app-wrapper {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- TOP BAR --- */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 28px;
+            background: rgba(8, 12, 24, 0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-brand);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 0 16px rgba(99, 130, 255, 0.25);
+        }
+
+        .brand-text {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            background: var(--gradient-brand);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .topbar-status {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .status-indicator.offline {
+            background: var(--accent-red-soft);
+            color: var(--accent-red);
+            border: 1px solid rgba(248, 113, 113, 0.15);
+        }
+
+        .status-indicator.online {
+            background: var(--accent-green-soft);
+            color: var(--accent-green);
+            border: 1px solid rgba(52, 211, 153, 0.15);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .status-indicator.online .status-dot {
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4); }
+            50% { box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
+        }
+
+        .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 14px;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-full);
+            border: 1px solid var(--border-subtle);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .user-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--gradient-brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .btn-logout {
+            background: none;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            font-size: 0.78rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .btn-logout:hover {
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+            background: var(--accent-red-soft);
+        }
+
+        /* --- MAIN CONTENT AREA --- */
+        .main-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 260px 1fr 300px;
+            gap: 0;
+            max-width: 1600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* ================================================
+           AUTH SCREEN
+           ================================================ */
+        .auth-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 68px);
+            padding: 20px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            background: var(--bg-surface);
+            backdrop-filter: blur(24px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            padding: 40px 36px;
+            box-shadow: var(--shadow-lg), var(--shadow-glow);
+            animation: authCardIn 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes authCardIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .auth-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .auth-logo-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--gradient-brand);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 0 30px rgba(99, 130, 255, 0.2);
+        }
+
+        .auth-logo h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: var(--gradient-brand);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .auth-logo p {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+        }
+
+        .auth-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 13px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: var(--transition-base);
+            outline: none;
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px var(--accent-blue-soft), 0 0 16px rgba(99, 130, 255, 0.06);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 24px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            outline: none;
+            white-space: nowrap;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: var(--gradient-brand);
+            color: white;
+            box-shadow: 0 4px 16px rgba(99, 130, 255, 0.25);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 24px rgba(99, 130, 255, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .btn-secondary {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(30, 42, 68, 0.6);
+            border-color: var(--border-active);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent-purple), #6382ff);
+            color: white;
+            box-shadow: 0 4px 16px rgba(167, 139, 250, 0.2);
+        }
+
+        .btn-accent:hover {
+            box-shadow: 0 6px 24px rgba(167, 139, 250, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent-red), #e05252);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 4px 16px rgba(248, 113, 113, 0.25);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--accent-green), #22c99e);
+            color: var(--text-inverse);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+        }
+
+        .btn-full { width: 100%; }
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 0.82rem;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border-radius: var(--radius-sm);
+            flex-shrink: 0;
+        }
+
+        /* ================================================
+           SIDEBAR — LEFT (Online Users)
+           ================================================ */
+        .sidebar-left {
+            background: rgba(8, 12, 24, 0.5);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 68px);
+            position: sticky;
+            top: 68px;
+        }
+
+        .sidebar-header {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .sidebar-header h3 {
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .online-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent-green-soft);
+            color: var(--accent-green);
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            min-width: 22px;
+        }
+
+        .user-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition-fast);
+            cursor: default;
+            position: relative;
+        }
+
+        .user-item:hover {
+            background: var(--bg-elevated);
+        }
+
+        .user-item-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .user-item-avatar::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            border: 2px solid var(--bg-deep);
+        }
+
+        .user-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-item-name {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-item-role {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .user-item-self .user-item-name::after {
+            content: ' (You)';
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .user-item-actions {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: var(--transition-fast);
+        }
+
+        .user-item:hover .user-item-actions {
+            opacity: 1;
+        }
+
+        .user-item-self .user-item-actions {
+            display: none;
+        }
+
+        .btn-call {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background: var(--accent-green-soft);
+            color: var(--accent-green);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: var(--transition-fast);
+        }
+
+        .btn-call:hover {
+            background: var(--accent-green);
+            color: var(--text-inverse);
+            box-shadow: 0 0 12px rgba(52, 211, 153, 0.3);
+        }
+
+        /* ================================================
+           CENTRAL PANEL (Chat)
+           ================================================ */
+        .center-panel {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 68px);
+            position: relative;
+        }
+
+        .panel-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(8, 12, 24, 0.3);
+        }
+
+        .panel-header h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-header-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-sm);
+            background: var(--accent-blue-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+        }
+
+        /* Chat Messages */
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-area::-webkit-scrollbar { width: 5px; }
+        .chat-area::-webkit-scrollbar-track { background: transparent; }
+        .chat-area::-webkit-scrollbar-thumb {
+            background: var(--border-subtle);
+            border-radius: 10px;
+        }
+
+        .msg-bubble {
+            max-width: 75%;
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            animation: msgIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            line-height: 1.5;
+            font-size: 0.92rem;
+        }
+
+        @keyframes msgIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg-incoming {
+            align-self: flex-start;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-bottom-left-radius: 4px;
+        }
+
+        .msg-outgoing {
+            align-self: flex-end;
+            background: linear-gradient(135deg, rgba(99, 130, 255, 0.2), rgba(167, 139, 250, 0.15));
+            border: 1px solid rgba(99, 130, 255, 0.2);
+            border-bottom-right-radius: 4px;
+        }
+
+        .msg-sender-name {
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            margin-bottom: 2px;
+        }
+
+        .msg-outgoing .msg-sender-name {
+            color: var(--accent-cyan);
+        }
+
+        .msg-text {
+            color: var(--text-primary);
+            word-break: break-word;
+        }
+
+        .msg-time {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .chat-date-separator {
+            text-align: center;
+            padding: 12px 0;
+        }
+
+        .chat-date-separator span {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            background: var(--bg-surface-solid);
+            padding: 4px 14px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .chat-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: var(--text-muted);
+        }
+
+        .chat-empty-icon {
+            font-size: 2.5rem;
+            opacity: 0.4;
+        }
+
+        .chat-empty p {
+            font-size: 0.88rem;
+        }
+
+        /* Chat Input */
+        .chat-input-area {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-subtle);
+            background: rgba(8, 12, 24, 0.3);
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 4px 4px 4px 16px;
+            transition: var(--transition-base);
+        }
+
+        .chat-input-wrapper:focus-within {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px var(--accent-blue-soft);
+        }
+
+        .chat-input-wrapper input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 0.92rem;
+            font-family: inherit;
+            outline: none;
+            padding: 10px 0;
+        }
+
+        .chat-input-wrapper input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .chat-send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: var(--gradient-brand);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: var(--transition-fast);
+            flex-shrink: 0;
+        }
+
+        .chat-send-btn:hover {
+            box-shadow: 0 0 16px rgba(99, 130, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        /* ================================================
+           SIDEBAR — RIGHT (Video + Vault + Admin)
+           ================================================ */
+        .sidebar-right {
+            background: rgba(8, 12, 24, 0.5);
+            backdrop-filter: blur(12px);
+            border-left: 1px solid var(--border-subtle);
+            height: calc(100vh - 68px);
+            position: sticky;
+            top: 68px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-right::-webkit-scrollbar { width: 4px; }
+        .sidebar-right::-webkit-scrollbar-track { background: transparent; }
+        .sidebar-right::-webkit-scrollbar-thumb {
+            background: var(--border-subtle);
+            border-radius: 10px;
+        }
+
+        .right-panel {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .right-panel:last-child {
+            border-bottom: none;
+        }
+
+        .right-panel-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .right-panel-title .icon {
+            font-size: 0.9rem;
+        }
+
+        /* --- VIDEO CALL --- */
+        .video-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .video-wrapper {
+            position: relative;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            background: var(--bg-base);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .video-wrapper video {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            display: block;
+            background: #000;
+        }
+
+        .video-wrapper .video-label {
+            position: absolute;
+            bottom: 6px;
+            left: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            aspect-ratio: 4/3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .video-placeholder-icon {
+            font-size: 1.5rem;
+            opacity: 0.4;
+        }
+
+        .video-call-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .video-call-controls .btn {
+            flex: 1;
+        }
+
+        .call-status {
+            text-align: center;
+            padding: 8px;
+            font-size: 0.82rem;
+            color: var(--accent-green);
+            font-weight: 600;
+            display: none;
+        }
+
+        .call-status.active {
+            display: block;
+            animation: callPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes callPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* --- FILE VAULT --- */
+        .vault-dropzone {
+            border: 2px dashed var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition-base);
+            background: var(--bg-input);
+        }
+
+        .vault-dropzone:hover,
+        .vault-dropzone.dragover {
+            border-color: var(--accent-purple);
+            background: var(--accent-purple-soft);
+        }
+
+        .vault-dropzone-icon {
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+            opacity: 0.6;
+        }
+
+        .vault-dropzone p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .vault-dropzone .browse-text {
+            color: var(--accent-purple);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .vault-selected-file {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            margin-top: 10px;
+            font-size: 0.84rem;
+        }
+
+        .vault-selected-file.show {
+            display: flex;
+        }
+
+        .vault-file-icon {
+            font-size: 1.2rem;
+        }
+
+        .vault-file-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: var(--text-primary);
+        }
+
+        .vault-file-size {
+            color: var(--text-muted);
+            font-size: 0.76rem;
+            flex-shrink: 0;
+        }
+
+        .vault-file-remove {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0;
+            transition: var(--transition-fast);
+        }
+
+        .vault-file-remove:hover {
+            color: var(--accent-red);
+        }
+
+        .vault-files-list {
+            margin-top: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .vault-file-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            transition: var(--transition-fast);
+        }
+
+        .vault-file-item:hover {
+            border-color: var(--border-active);
+        }
+
+        .vault-file-item a {
+            color: var(--accent-purple);
+            text-decoration: none;
+            font-weight: 500;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .vault-file-item a:hover {
+            text-decoration: underline;
+        }
+
+        .vault-file-item .file-size {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            flex-shrink: 0;
+        }
+
+        /* --- ADMIN PANEL --- */
+        .admin-section {
+            display: none;
+        }
+
+        .admin-section.visible {
+            display: block;
+        }
+
+        .admin-section .form-input {
+            margin-bottom: 10px;
+            padding: 10px 14px;
+            font-size: 0.88rem;
+        }
+
+        /* ================================================
+           INCOMING CALL OVERLAY
+           ================================================ */
+        .call-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(6, 8, 15, 0.85);
+            backdrop-filter: blur(20px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .call-overlay.active {
+            display: flex;
+            animation: overlayIn 0.3s ease;
+        }
+
+        @keyframes overlayIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .call-modal {
+            background: var(--bg-surface);
+            backdrop-filter: blur(24px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            padding: 40px 48px;
+            text-align: center;
+            box-shadow: var(--shadow-lg), 0 0 60px rgba(99, 130, 255, 0.08);
+            animation: callModalIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes callModalIn {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .call-modal-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: var(--gradient-brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: white;
+            margin: 0 auto 16px;
+            animation: callRing 1.5s ease-in-out infinite;
+        }
+
+        @keyframes callRing {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(99, 130, 255, 0.4); }
+            50% { box-shadow: 0 0 0 16px rgba(99, 130, 255, 0); }
+        }
+
+        .call-modal h3 {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+
+        .call-modal p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 28px;
+        }
+
+        .call-modal-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .call-modal-actions .btn {
+            padding: 14px 32px;
+            border-radius: var(--radius-full);
+            font-size: 0.95rem;
+        }
+
+        /* ================================================
+           RESPONSIVE
+           ================================================ */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            .sidebar-left, .sidebar-right {
+                display: none;
+            }
+            .sidebar-left.mobile-open, .sidebar-right.mobile-open {
+                display: flex;
+                position: fixed;
+                top: 68px;
+                bottom: 0;
+                width: 300px;
+                z-index: 200;
+            }
+            .sidebar-left.mobile-open { left: 0; }
+            .sidebar-right.mobile-open { right: 0; }
+            .mobile-toggle { display: flex !important; }
+        }
+
+        @media (min-width: 1025px) {
+            .mobile-toggle { display: none !important; }
+        }
+
+        .mobile-toggle {
+            display: none;
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        /* ================================================
+           UTILITY / SCROLLBAR
+           ================================================ */
+        .hidden { display: none !important; }
+
+        .user-list::-webkit-scrollbar { width: 4px; }
+        .user-list::-webkit-scrollbar-track { background: transparent; }
+        .user-list::-webkit-scrollbar-thumb {
+            background: var(--border-subtle);
+            border-radius: 10px;
+        }
+
+        .upload-progress {
+            height: 3px;
+            background: var(--bg-input);
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .upload-progress.active {
+            display: block;
+        }
+
+        .upload-progress-bar {
+            height: 100%;
+            background: var(--gradient-brand);
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated Background -->
+    <div class="bg-mesh"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Incoming Call Overlay -->
+    <div class="call-overlay" id="call-overlay">
+        <div class="call-modal">
+            <div class="call-modal-avatar" id="call-modal-avatar">?</div>
+            <h3 id="call-modal-name">Incoming Call</h3>
+            <p>Incoming video uplink request…</p>
+            <div class="call-modal-actions">
+                <button class="btn btn-success" id="btn-accept-call" onclick="acceptIncomingCall()">✓ Accept</button>
+                <button class="btn btn-danger" id="btn-reject-call" onclick="rejectIncomingCall()">✕ Decline</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Wrapper -->
+    <div class="app-wrapper">
+
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-brand">
+                <button class="mobile-toggle" id="toggle-left-sidebar" onclick="toggleSidebar('left')">☰</button>
+                <div class="brand-icon">SR</div>
+                <span class="brand-text">Stealth Relay</span>
+            </div>
+            <div class="topbar-status">
+                <div class="status-indicator offline" id="sys-status">
+                    <span class="status-dot"></span>
+                    <span id="status-text">DISCONNECTED</span>
+                </div>
+                <div class="topbar-user hidden" id="topbar-user">
+                    <div class="user-avatar" id="topbar-avatar">?</div>
+                    <span id="topbar-username">—</span>
+                </div>
+                <button class="btn-logout hidden" id="btn-logout" onclick="logout()">Logout</button>
+                <button class="mobile-toggle" id="toggle-right-sidebar" onclick="toggleSidebar('right')">⚙</button>
+            </div>
+        </header>
+
+        <!-- AUTH SCREEN -->
+        <div class="auth-screen" id="auth-screen">
+            <div class="auth-card">
+                <div class="auth-logo">
+                    <div class="auth-logo-icon">🔐</div>
+                    <h1>Stealth Relay</h1>
+                    <p>End-to-End Secure Communications Node</p>
+                </div>
+                <div class="auth-divider"></div>
+                <div class="form-group">
+                    <label class="form-label" for="username">Codename</label>
+                    <input class="form-input" type="text" id="username" placeholder="Enter your codename" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="passcode">Passcode</label>
+                    <input class="form-input" type="password" id="passcode" placeholder="Enter your passcode" autocomplete="current-password" onkeypress="if(event.key==='Enter') login()">
+                </div>
+                <button class="btn btn-primary btn-full" id="btn-login" onclick="login()" style="margin-top: 8px;">
+                    Authenticate →
+                </button>
+            </div>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div class="main-content hidden" id="dashboard">
+
+            <!-- LEFT SIDEBAR: Online Users -->
+            <aside class="sidebar-left" id="sidebar-left">
+                <div class="sidebar-header">
+                    <h3>
+                        <span>Online Agents</span>
+                        <span class="online-count" id="online-count">0</span>
+                    </h3>
+                </div>
+                <div class="user-list" id="user-list">
+                    <!-- Populated dynamically -->
+                </div>
+            </aside>
+
+            <!-- CENTER: Chat -->
+            <main class="center-panel">
+                <div class="panel-header">
+                    <h2>
+                        <span class="panel-header-icon">💬</span>
+                        Encrypted Channel
+                    </h2>
+                </div>
+                <div class="chat-area" id="chat-window">
+                    <div class="chat-empty" id="chat-empty">
+                        <div class="chat-empty-icon">🔒</div>
+                        <p>Encrypted channel is active</p>
+                        <p style="font-size: 0.78rem; color: var(--text-muted);">Messages are end-to-end secured</p>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <div class="chat-input-wrapper">
+                        <input type="text" id="chat-input" placeholder="Type a secure message…" onkeypress="if(event.key==='Enter') sendMessage()" autocomplete="off">
+                        <button class="chat-send-btn" id="btn-send" onclick="sendMessage()" title="Send message">➤</button>
+                    </div>
+                </div>
+            </main>
+
+            <!-- RIGHT SIDEBAR: Video + Vault + Admin -->
+            <aside class="sidebar-right" id="sidebar-right">
+
+                <!-- Video Call Panel -->
+                <div class="right-panel">
+                    <div class="right-panel-title"><span class="icon">📹</span> Video Uplink</div>
+                    <div class="video-container" id="video-container">
+                        <div class="video-wrapper">
+                            <video id="localVideo" autoplay playsinline muted style="display:none;"></video>
+                            <div class="video-placeholder" id="local-placeholder">
+                                <div class="video-placeholder-icon">📷</div>
+                                <span>Local Feed</span>
+                            </div>
+                            <span class="video-label" style="display:none;" id="local-label">You</span>
+                        </div>
+                        <div class="video-wrapper">
+                            <video id="remoteVideo" autoplay playsinline style="display:none;"></video>
+                            <div class="video-placeholder" id="remote-placeholder">
+                                <div class="video-placeholder-icon">📡</div>
+                                <span>Remote Feed</span>
+                            </div>
+                            <span class="video-label" style="display:none;" id="remote-label">Remote</span>
+                        </div>
+                    </div>
+                    <div class="call-status" id="call-status">● Connected</div>
+                    <div class="video-call-controls">
+                        <button class="btn btn-danger btn-sm hidden" id="btn-hangup" onclick="hangupCall()">✕ Hang Up</button>
+                    </div>
+                </div>
+
+                <!-- File Vault Panel -->
+                <div class="right-panel">
+                    <div class="right-panel-title"><span class="icon">🗄️</span> Secure Vault</div>
+                    <div class="vault-dropzone" id="vault-dropzone" onclick="document.getElementById('vault-file').click()">
+                        <div class="vault-dropzone-icon">📁</div>
+                        <p>Drop file here or <span class="browse-text">browse</span></p>
+                        <p style="font-size: 0.72rem; margin-top: 4px;">Max 50 MB</p>
+                    </div>
+                    <input type="file" id="vault-file" style="display:none;" onchange="onFileSelected()">
+
+                    <div class="vault-selected-file" id="vault-selected">
+                        <span class="vault-file-icon">📄</span>
+                        <span class="vault-file-name" id="vault-file-name">—</span>
+                        <span class="vault-file-size" id="vault-file-size">—</span>
+                        <button class="vault-file-remove" onclick="clearSelectedFile()" title="Remove">✕</button>
+                    </div>
+
+                    <div class="upload-progress" id="upload-progress">
+                        <div class="upload-progress-bar" id="upload-progress-bar"></div>
+                    </div>
+
+                    <button class="btn btn-accent btn-full btn-sm" id="btn-upload" onclick="uploadToVault()" style="margin-top: 10px;">
+                        ↑ Upload & Encrypt
+                    </button>
+
+                    <div class="vault-files-list" id="vault-files-list">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Admin Panel -->
+                <div class="right-panel admin-section" id="admin-panel">
+                    <div class="right-panel-title"><span class="icon">👤</span> Admin — Provision</div>
+                    <input class="form-input" type="text" id="new-user-name" placeholder="New codename" autocomplete="off">
+                    <input class="form-input" type="password" id="new-user-pass" placeholder="New passcode" autocomplete="new-password">
+                    <button class="btn btn-secondary btn-full btn-sm" onclick="registerNewUser()">
+                        + Provision Personnel
+                    </button>
+                </div>
+
+            </aside>
+
+        </div>
+    </div>
+
+    <script>
+        // ================================================
+        // GLOBAL STATE
+        // ================================================
+        const BACKEND_URL = window.location.origin;
+        let socket = null;
+        let localStream = null;
+        let peerConnection = null;
+        let currentUser = null;
+        let callActive = false;
+        let callTargetSocketId = null;
+        let incomingCallData = null; // { senderSocketId, offer, senderUsername }
+        let callTimerInterval = null;
+        let callStartTime = null;
+
+        const rtcConfig = {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+        };
+
+        // ================================================
+        // TOAST NOTIFICATIONS
+        // ================================================
+        function showToast(message, type = 'info', duration = 4000) {
+            const container = document.getElementById('toast-container');
+            const icons = { success: '✓', error: '✕', info: 'ℹ', warning: '⚠' };
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span class="toast-icon">${icons[type] || icons.info}</span>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('removing');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        // ================================================
+        // AUTH
+        // ================================================
+        async function login() {
+            const username = document.getElementById('username').value.trim();
+            const passcode = document.getElementById('passcode').value;
+
+            if (!username || !passcode) {
+                showToast('Please enter both codename and passcode.', 'warning');
+                return;
+            }
+
+            const btn = document.getElementById('btn-login');
+            btn.textContent = 'Authenticating…';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, passcode })
+                });
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.error || 'Authentication failed.');
+
+                localStorage.setItem('secure_token', data.token);
+                currentUser = parseJwt(data.token);
+                showToast('Authentication successful. Welcome back.', 'success');
+                initSocketConnection(data.token);
+            } catch (err) {
+                showToast(err.message, 'error');
+                btn.textContent = 'Authenticate →';
+                btn.disabled = false;
+            }
+        }
+
+        function logout() {
+            if (callActive) hangupCall();
+            if (socket) socket.disconnect();
+            localStorage.removeItem('secure_token');
+            currentUser = null;
+            socket = null;
+            document.getElementById('auth-screen').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('topbar-user').classList.add('hidden');
+            document.getElementById('btn-logout').classList.add('hidden');
+            const statusEl = document.getElementById('sys-status');
+            statusEl.className = 'status-indicator offline';
+            document.getElementById('status-text').textContent = 'DISCONNECTED';
+            document.getElementById('btn-login').textContent = 'Authenticate →';
+            document.getElementById('btn-login').disabled = false;
+            showToast('Session terminated.', 'info');
+        }
+
+        function parseJwt(token) {
+            try {
+                return JSON.parse(atob(token.split('.')[1]));
+            } catch { return {}; }
+        }
+
+        // ================================================
+        // DASHBOARD ACTIVATION
+        // ================================================
+        function showDashboard(socketId) {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+
+            const statusEl = document.getElementById('sys-status');
+            statusEl.className = 'status-indicator online';
+            document.getElementById('status-text').textContent = 'SECURE';
+
+            // Topbar user info
+            const topbarUser = document.getElementById('topbar-user');
+            topbarUser.classList.remove('hidden');
+            document.getElementById('btn-logout').classList.remove('hidden');
+
+            const initials = (currentUser.username || '?').substring(0, 2).toUpperCase();
+            document.getElementById('topbar-avatar').textContent = initials;
+            document.getElementById('topbar-username').textContent = currentUser.username;
+
+            // Show admin panel if admin
+            const adminPanel = document.getElementById('admin-panel');
+            if (currentUser.role === 'admin') {
+                adminPanel.classList.add('visible');
+            }
+
+            // Load vault files
+            loadVaultFiles();
+        }
+
+        // ================================================
+        // SOCKET CONNECTION & EVENTS
+        // ================================================
+        function initSocketConnection(token) {
+            if (socket) socket.disconnect();
+            socket = io(BACKEND_URL, { query: { token } });
+
+            socket.on('connect', () => showDashboard(socket.id));
+
+            socket.on('disconnect', () => {
+                const statusEl = document.getElementById('sys-status');
+                statusEl.className = 'status-indicator offline';
+                document.getElementById('status-text').textContent = 'RECONNECTING…';
+            });
+
+            socket.on('receive_message', (data) => {
+                appendMessage(data.sender, data.content, false, data.timestamp);
+            });
+
+            socket.on('online-users', (users) => {
+                renderOnlineUsers(users);
+            });
+
+            // WebRTC signaling
+            socket.on('video-offer', (data) => {
+                showIncomingCall(data.senderSocketId, data.offer, data.senderUsername);
+            });
+
+            socket.on('video-answer', async (data) => {
+                if (peerConnection) {
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+                }
+            });
+
+            socket.on('ice-candidate', async (data) => {
+                if (peerConnection) {
+                    try {
+                        await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+                    } catch (e) {
+                        console.error('ICE candidate error:', e);
+                    }
+                }
+            });
+
+            socket.on('video-rejected', (data) => {
+                showToast(`${data.senderUsername || 'User'} declined the call.`, 'warning');
+                cleanupCall();
+            });
+
+            socket.on('video-hangup', () => {
+                showToast('Call ended by remote peer.', 'info');
+                cleanupCall();
+            });
+        }
+
+        // ================================================
+        // ONLINE USERS RENDERING
+        // ================================================
+        function renderOnlineUsers(users) {
+            const list = document.getElementById('user-list');
+            const count = document.getElementById('online-count');
+            count.textContent = users.length;
+
+            list.innerHTML = users.map(u => {
+                const initials = u.username.substring(0, 2).toUpperCase();
+                const isSelf = socket && u.socketId === socket.id;
+                return `
+                    <div class="user-item ${isSelf ? 'user-item-self' : ''}">
+                        <div class="user-item-avatar">${initials}</div>
+                        <div class="user-item-info">
+                            <div class="user-item-name">${escapeHtml(u.username)}</div>
+                            <div class="user-item-role">${u.role || 'personnel'}</div>
+                        </div>
+                        <div class="user-item-actions">
+                            <button class="btn-call" title="Video call ${escapeHtml(u.username)}" onclick="startVideoCall('${u.socketId}')">📞</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ================================================
+        // CHAT
+        // ================================================
+        let firstMessage = true;
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text || !socket) return;
+
+            socket.emit('send_message', JSON.stringify({ content: text }));
+            appendMessage('You', text, true);
+            input.value = '';
+            input.focus();
+        }
+
+        function appendMessage(sender, text, isSelf, timestamp) {
+            if (firstMessage) {
+                const empty = document.getElementById('chat-empty');
+                if (empty) empty.remove();
+                firstMessage = false;
+            }
+
+            const win = document.getElementById('chat-window');
+            const time = timestamp ? new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const bubble = document.createElement('div');
+            bubble.className = `msg-bubble ${isSelf ? 'msg-outgoing' : 'msg-incoming'}`;
+            bubble.innerHTML = `
+                <div class="msg-sender-name">${escapeHtml(sender)}</div>
+                <div class="msg-text">${escapeHtml(text)}</div>
+                <div class="msg-time">${time}</div>
+            `;
+            win.appendChild(bubble);
+            win.scrollTop = win.scrollHeight;
+        }
+
+        // ================================================
+        // FILE VAULT
+        // ================================================
+        // Drag and drop
+        const dropzone = document.getElementById('vault-dropzone');
+        if (dropzone) {
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.classList.add('dragover');
+            });
+            dropzone.addEventListener('dragleave', () => {
+                dropzone.classList.remove('dragover');
+            });
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    document.getElementById('vault-file').files = files;
+                    onFileSelected();
+                }
+            });
+        }
+
+        function onFileSelected() {
+            const fileInput = document.getElementById('vault-file');
+            const selected = document.getElementById('vault-selected');
+            if (fileInput.files[0]) {
+                document.getElementById('vault-file-name').textContent = fileInput.files[0].name;
+                document.getElementById('vault-file-size').textContent = formatFileSize(fileInput.files[0].size);
+                selected.classList.add('show');
+            }
+        }
+
+        function clearSelectedFile() {
+            document.getElementById('vault-file').value = '';
+            document.getElementById('vault-selected').classList.remove('show');
+        }
+
+        async function uploadToVault() {
+            const fileInput = document.getElementById('vault-file');
+            const token = localStorage.getItem('secure_token');
+
+            if (!fileInput.files[0]) {
+                showToast('Please select a file first.', 'warning');
+                return;
+            }
+
+            const progressEl = document.getElementById('upload-progress');
+            const progressBar = document.getElementById('upload-progress-bar');
+            progressEl.classList.add('active');
+            progressBar.style.width = '0%';
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                // Simulate progress
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress = Math.min(progress + Math.random() * 20, 90);
+                    progressBar.style.width = progress + '%';
+                }, 200);
+
+                const response = await fetch(`${BACKEND_URL}/vault/upload`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                const data = await response.json();
+
+                clearInterval(progressInterval);
+
+                if (!response.ok) throw new Error(data.error);
+
+                progressBar.style.width = '100%';
+                setTimeout(() => {
+                    progressEl.classList.remove('active');
+                    progressBar.style.width = '0%';
+                }, 1000);
+
+                showToast('File encrypted and stored successfully!', 'success');
+                clearSelectedFile();
+                loadVaultFiles();
+            } catch (err) {
+                progressEl.classList.remove('active');
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function loadVaultFiles() {
+            const token = localStorage.getItem('secure_token');
+            const listEl = document.getElementById('vault-files-list');
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/vault/files`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.error);
+
+                if (data.files.length === 0) {
+                    listEl.innerHTML = '<p style="font-size: 0.78rem; color: var(--text-muted); text-align: center; padding: 10px;">No files in vault</p>';
+                    return;
+                }
+
+                listEl.innerHTML = data.files.map(f => `
+                    <div class="vault-file-item">
+                        <span>📄</span>
+                        <a href="${f.downloadLink}?token=${token}" target="_blank" title="${escapeHtml(f.fileName)}">${escapeHtml(f.fileName)}</a>
+                        <span class="file-size">${formatFileSize(f.size)}</span>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error('Failed to load vault files:', err);
+            }
+        }
+
+        // ================================================
+        // VIDEO CALL — WebRTC
+        // ================================================
+        async function startVideoCall(targetSocketId) {
+            if (callActive) {
+                showToast('A call is already in progress.', 'warning');
+                return;
+            }
+
+            callTargetSocketId = targetSocketId;
+
+            try {
+                await setupMediaDevices();
+            } catch (err) {
+                showToast('Camera/mic access denied. Please allow permissions.', 'error');
+                return;
+            }
+
+            setupPeerConnection(targetSocketId);
+
+            try {
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                socket.emit('video-offer', { targetSocketId, offer });
+                showToast('Calling… waiting for response.', 'info');
+                callActive = true;
+                document.getElementById('btn-hangup').classList.remove('hidden');
+            } catch (err) {
+                showToast('Failed to initiate call.', 'error');
+                cleanupCall();
+            }
+        }
+
+        function showIncomingCall(senderSocketId, offer, senderUsername) {
+            incomingCallData = { senderSocketId, offer, senderUsername };
+            const overlay = document.getElementById('call-overlay');
+            overlay.classList.add('active');
+
+            const initials = (senderUsername || '?').substring(0, 2).toUpperCase();
+            document.getElementById('call-modal-avatar').textContent = initials;
+            document.getElementById('call-modal-name').textContent = senderUsername || 'Unknown Agent';
+        }
+
+        async function acceptIncomingCall() {
+            if (!incomingCallData) return;
+            const { senderSocketId, offer } = incomingCallData;
+
+            document.getElementById('call-overlay').classList.remove('active');
+
+            try {
+                await setupMediaDevices();
+            } catch (err) {
+                showToast('Camera/mic access denied.', 'error');
+                socket.emit('video-reject', { targetSocketId: senderSocketId });
+                incomingCallData = null;
+                return;
+            }
+
+            setupPeerConnection(senderSocketId);
+            callTargetSocketId = senderSocketId;
+
+            try {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                socket.emit('video-answer', { targetSocketId: senderSocketId, answer });
+                callActive = true;
+                document.getElementById('btn-hangup').classList.remove('hidden');
+                startCallTimer();
+                showToast('Video uplink established.', 'success');
+            } catch (err) {
+                showToast('Failed to accept call.', 'error');
+                cleanupCall();
+            }
+
+            incomingCallData = null;
+        }
+
+        function rejectIncomingCall() {
+            if (!incomingCallData) return;
+            socket.emit('video-reject', { targetSocketId: incomingCallData.senderSocketId });
+            document.getElementById('call-overlay').classList.remove('active');
+            incomingCallData = null;
+        }
+
+        async function setupMediaDevices() {
+            if (localStream) return; // Already set up
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            const localVideo = document.getElementById('localVideo');
+            localVideo.srcObject = localStream;
+            localVideo.style.display = 'block';
+            document.getElementById('local-placeholder').style.display = 'none';
+            document.getElementById('local-label').style.display = 'block';
+        }
+
+        function setupPeerConnection(targetSocketId) {
+            if (peerConnection) {
+                peerConnection.close();
+            }
+            peerConnection = new RTCPeerConnection(rtcConfig);
+
+            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+            peerConnection.ontrack = (e) => {
+                const remoteVideo = document.getElementById('remoteVideo');
+                remoteVideo.srcObject = e.streams[0];
+                remoteVideo.style.display = 'block';
+                document.getElementById('remote-placeholder').style.display = 'none';
+                document.getElementById('remote-label').style.display = 'block';
+                startCallTimer();
+            };
+
+            peerConnection.onicecandidate = (e) => {
+                if (e.candidate) {
+                    socket.emit('ice-candidate', { targetSocketId, candidate: e.candidate });
+                }
+            };
+
+            peerConnection.oniceconnectionstatechange = () => {
+                if (peerConnection.iceConnectionState === 'disconnected' || peerConnection.iceConnectionState === 'failed') {
+                    showToast('Connection lost.', 'warning');
+                    cleanupCall();
+                }
+            };
+        }
+
+        function hangupCall() {
+            if (callTargetSocketId && socket) {
+                socket.emit('video-hangup', { targetSocketId: callTargetSocketId });
+            }
+            showToast('Call ended.', 'info');
+            cleanupCall();
+        }
+
+        function cleanupCall() {
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
+            }
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                localStream = null;
+            }
+
+            const localVideo = document.getElementById('localVideo');
+            const remoteVideo = document.getElementById('remoteVideo');
+            localVideo.srcObject = null;
+            localVideo.style.display = 'none';
+            remoteVideo.srcObject = null;
+            remoteVideo.style.display = 'none';
+
+            document.getElementById('local-placeholder').style.display = 'flex';
+            document.getElementById('remote-placeholder').style.display = 'flex';
+            document.getElementById('local-label').style.display = 'none';
+            document.getElementById('remote-label').style.display = 'none';
+
+            document.getElementById('btn-hangup').classList.add('hidden');
+
+            const callStatus = document.getElementById('call-status');
+            callStatus.classList.remove('active');
+
+            callActive = false;
+            callTargetSocketId = null;
+
+            if (callTimerInterval) {
+                clearInterval(callTimerInterval);
+                callTimerInterval = null;
+            }
+        }
+
+        function startCallTimer() {
+            if (callTimerInterval) return; // Already running
+            callStartTime = Date.now();
+            const callStatus = document.getElementById('call-status');
+            callStatus.classList.add('active');
+
+            callTimerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - callStartTime) / 1000);
+                const min = String(Math.floor(elapsed / 60)).padStart(2, '0');
+                const sec = String(elapsed % 60).padStart(2, '0');
+                callStatus.textContent = `● Connected — ${min}:${sec}`;
+            }, 1000);
+        }
+
+        // ================================================
+        // ADMIN — REGISTER NEW USER
+        // ================================================
+        async function registerNewUser() {
+            const username = document.getElementById('new-user-name').value.trim();
+            const passcode = document.getElementById('new-user-pass').value;
+            const token = localStorage.getItem('secure_token');
+
+            if (!username || !passcode) {
+                showToast('Codename and passcode are required.', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ username, passcode })
+                });
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.error);
+
+                showToast(data.message, 'success');
+                document.getElementById('new-user-name').value = '';
+                document.getElementById('new-user-pass').value = '';
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        // ================================================
+        // MOBILE SIDEBAR TOGGLE
+        // ================================================
+        function toggleSidebar(side) {
+            const el = document.getElementById(side === 'left' ? 'sidebar-left' : 'sidebar-right');
+            el.classList.toggle('mobile-open');
+        }
+
+        // ================================================
+        // UTILITY FUNCTIONS
+        // ================================================
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        // ================================================
+        // AUTO-LOGIN FROM STORED TOKEN
+        // ================================================
+        (function autoLogin() {
+            const token = localStorage.getItem('secure_token');
+            if (token) {
+                const decoded = parseJwt(token);
+                // Check if token is still valid (not expired)
+                if (decoded.exp && decoded.exp * 1000 > Date.now()) {
+                    currentUser = decoded;
+                    initSocketConnection(token);
+                } else {
+                    localStorage.removeItem('secure_token');
+                }
+            }
+        })();
+
+        // ================================================
+        // PWA SERVICE WORKER REGISTRATION
+        // ================================================
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then((reg) => console.log('Service Worker registered:', reg.scope))
+                .catch((err) => console.warn('Service Worker registration failed:', err));
+        }
+    </script>
+</body>
+</html>
