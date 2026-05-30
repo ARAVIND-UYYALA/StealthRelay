@@ -65,20 +65,18 @@ pool.connect()
             // Adds role column if missing (upgrade for existing DBs)
             await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'personnel';");
 
-            // Seed default admin if no users exist
-            const userCount = await pool.query("SELECT COUNT(*) FROM users;");
-            if (parseInt(userCount.rows[0].count) === 0) {
-                const bcrypt = require('bcrypt');
-                const hashedPass = await bcrypt.hash('admin123', 10);
-                await pool.query(
-                    "INSERT INTO users (username, passcode, role) VALUES ($1, $2, 'admin')",
-                    ['commander_zero', hashedPass]
-                );
-                console.log('Default admin "commander_zero" created (passcode: admin123). CHANGE THIS!');
-            }
+            // Forcefully seed/reset default admin so you can always log in
+            const bcrypt = require('bcrypt');
+            const hashedPass = await bcrypt.hash('admin123', 10);
+            
+            await pool.query(`
+                INSERT INTO users (username, passcode, role) 
+                VALUES ('commander_zero', $1, 'admin')
+                ON CONFLICT (username) 
+                DO UPDATE SET passcode = EXCLUDED.passcode, role = 'admin';
+            `, [hashedPass]);
 
-            await pool.query("UPDATE users SET role = 'admin' WHERE username = 'commander_zero';");
-            console.log('Schema verified. Admin clearance applied.');
+            console.log('Schema verified. Admin commander_zero access guaranteed (passcode: admin123).');
         } catch (e) {
             console.error("Schema setup failed:", e.message);
         }
