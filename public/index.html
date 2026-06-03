@@ -1264,32 +1264,186 @@
         }
 
         /* ================================================
-           RESPONSIVE
+           SIDEBAR BACKDROP OVERLAY
            ================================================ */
-        @media (max-width: 1024px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            .sidebar-left, .sidebar-right {
-                display: none;
-            }
-            .sidebar-left.mobile-open, .sidebar-right.mobile-open {
-                display: flex;
-                position: fixed;
-                top: 68px;
-                bottom: 0;
-                width: 300px;
-                z-index: 200;
-            }
-            .sidebar-left.mobile-open { left: 0; }
-            .sidebar-right.mobile-open { right: 0; }
-            .mobile-toggle { display: flex !important; }
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 199;
+            background: rgba(6, 8, 15, 0.6);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
         }
 
-        @media (min-width: 1025px) {
-            .mobile-toggle { display: none !important; }
+        .sidebar-backdrop.active {
+            display: block;
+            opacity: 1;
+            pointer-events: auto;
         }
 
+        /* ================================================
+           SIGN-IN PROMPT BANNER
+           ================================================ */
+        .signin-prompt-banner {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            background: linear-gradient(135deg, rgba(99, 130, 255, 0.08), rgba(167, 139, 250, 0.08));
+            border: 1px solid rgba(99, 130, 255, 0.15);
+            border-radius: var(--radius-md);
+            margin-bottom: 24px;
+            animation: bannerPulse 3s ease-in-out infinite;
+        }
+
+        .signin-prompt-banner .prompt-icon {
+            font-size: 1.3rem;
+            animation: bellRing 2s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes bellRing {
+            0%, 100% { transform: rotate(0deg); }
+            10% { transform: rotate(14deg); }
+            20% { transform: rotate(-12deg); }
+            30% { transform: rotate(8deg); }
+            40% { transform: rotate(-4deg); }
+            50%, 100% { transform: rotate(0deg); }
+        }
+
+        @keyframes bannerPulse {
+            0%, 100% { border-color: rgba(99, 130, 255, 0.15); }
+            50% { border-color: rgba(99, 130, 255, 0.35); }
+        }
+
+        .signin-prompt-banner .prompt-text {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .signin-prompt-banner .prompt-text strong {
+            color: var(--accent-blue);
+        }
+
+        /* ================================================
+           MOBILE BOTTOM NAV BAR
+           ================================================ */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 300;
+            background: rgba(8, 12, 24, 0.92);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-subtle);
+            padding: 6px 0;
+            padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+        }
+
+        .mobile-bottom-nav-inner {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .mobile-nav-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 6px 16px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.68rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            position: relative;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .mobile-nav-tab .nav-icon {
+            font-size: 1.25rem;
+            transition: var(--transition-fast);
+        }
+
+        .mobile-nav-tab.active {
+            color: var(--accent-blue);
+        }
+
+        .mobile-nav-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 3px;
+            background: var(--gradient-brand);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .mobile-nav-tab:active {
+            transform: scale(0.92);
+        }
+
+        .mobile-nav-tab .nav-badge {
+            position: absolute;
+            top: 2px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-red);
+            border-radius: 50%;
+            border: 2px solid rgba(8, 12, 24, 0.92);
+            display: none;
+        }
+
+        .mobile-nav-tab .nav-badge.visible {
+            display: block;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        /* ================================================
+           INCOMING CALL RINGTONE INDICATOR
+           ================================================ */
+        .ringtone-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(52, 211, 153, 0.08);
+            border: 1px solid rgba(52, 211, 153, 0.2);
+            border-radius: var(--radius-full);
+            font-size: 0.78rem;
+            color: var(--accent-green);
+            font-weight: 600;
+            animation: ringtoneFlash 1s ease-in-out infinite;
+        }
+
+        .ringtone-indicator.active {
+            display: inline-flex;
+        }
+
+        @keyframes ringtoneFlash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ================================================
+           MOBILE TOGGLE (topbar hamburger buttons)
+           ================================================ */
         .mobile-toggle {
             display: none;
             width: 36px;
@@ -1302,6 +1456,306 @@
             align-items: center;
             justify-content: center;
             font-size: 1rem;
+        }
+
+        /* ================================================
+           RESPONSIVE — DESKTOP (≥ 1025px)
+           ================================================ */
+        @media (min-width: 1025px) {
+            .mobile-toggle { display: none !important; }
+            .mobile-bottom-nav { display: none !important; }
+            .sidebar-backdrop { display: none !important; }
+        }
+
+        /* ================================================
+           RESPONSIVE — TABLET (769px – 1024px)
+           ================================================ */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .main-content {
+                grid-template-columns: 240px 1fr;
+            }
+
+            .sidebar-right {
+                display: none;
+                position: fixed;
+                top: 68px;
+                bottom: 0;
+                right: 0;
+                width: 320px;
+                z-index: 200;
+                transform: translateX(100%);
+                transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            }
+
+            .sidebar-right.mobile-open {
+                display: flex;
+                transform: translateX(0);
+            }
+
+            .sidebar-left {
+                display: flex;
+            }
+
+            .mobile-toggle#toggle-left-sidebar { display: none !important; }
+            .mobile-toggle#toggle-right-sidebar { display: flex !important; }
+
+            .topbar {
+                padding: 14px 20px;
+            }
+
+            .brand-text {
+                font-size: 1.05rem;
+            }
+
+            .chat-area {
+                padding: 16px 20px;
+            }
+
+            .auth-card {
+                max-width: 400px;
+                padding: 36px 32px;
+            }
+        }
+
+        /* ================================================
+           RESPONSIVE — MOBILE (≤ 768px)
+           ================================================ */
+        @media (max-width: 768px) {
+            /* --- TOPBAR --- */
+            .topbar {
+                padding: 10px 14px;
+                gap: 8px;
+            }
+
+            .brand-text {
+                font-size: 0.95rem;
+            }
+
+            .topbar-status {
+                gap: 8px;
+            }
+
+            .status-indicator {
+                padding: 4px 10px;
+                font-size: 0.7rem;
+            }
+
+            .topbar-user {
+                display: none !important;
+            }
+
+            .btn-logout {
+                padding: 5px 10px;
+                font-size: 0.72rem;
+            }
+
+            .mobile-toggle {
+                display: flex !important;
+                width: 34px;
+                height: 34px;
+            }
+
+            /* --- MAIN CONTENT --- */
+            .main-content {
+                grid-template-columns: 1fr;
+                padding-bottom: 64px; /* space for bottom nav */
+            }
+
+            /* --- SIDEBARS AS SLIDE-IN DRAWERS --- */
+            .sidebar-left,
+            .sidebar-right {
+                display: none;
+                position: fixed;
+                top: 56px;
+                bottom: 64px; /* above bottom nav */
+                width: 85vw;
+                max-width: 320px;
+                z-index: 200;
+                transform: translateX(-100%);
+                transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+                background: rgba(8, 12, 24, 0.95);
+                backdrop-filter: blur(20px);
+            }
+
+            .sidebar-right {
+                transform: translateX(100%);
+                right: 0;
+                left: auto;
+            }
+
+            .sidebar-left.mobile-open,
+            .sidebar-right.mobile-open {
+                display: flex;
+                transform: translateX(0);
+            }
+
+            /* --- CENTER PANEL --- */
+            .center-panel {
+                height: calc(100vh - 56px - 64px); /* topbar + bottom nav */
+            }
+
+            .panel-header {
+                padding: 12px 16px;
+            }
+
+            .panel-header h2 {
+                font-size: 0.9rem;
+            }
+
+            .chat-area {
+                padding: 12px 14px;
+                gap: 5px;
+            }
+
+            .msg-bubble {
+                max-width: 85%;
+                padding: 9px 13px;
+                font-size: 0.88rem;
+            }
+
+            /* --- CHAT INPUT --- */
+            .chat-input-area {
+                padding: 10px 14px;
+                padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+            }
+
+            .chat-input-wrapper {
+                padding: 3px 3px 3px 14px;
+            }
+
+            .chat-input-wrapper input {
+                font-size: 0.9rem;
+                padding: 11px 0;
+                min-height: 44px; /* touch target */
+            }
+
+            .chat-send-btn {
+                width: 44px;
+                height: 44px;
+                font-size: 1.1rem;
+            }
+
+            /* --- AUTH SCREEN --- */
+            .auth-screen {
+                padding: 16px;
+                min-height: calc(100vh - 56px);
+                align-items: flex-start;
+                padding-top: 10vh;
+            }
+
+            .auth-card {
+                max-width: 100%;
+                padding: 28px 22px;
+                border-radius: var(--radius-lg);
+            }
+
+            .auth-logo h1 {
+                font-size: 1.35rem;
+            }
+
+            .auth-logo p {
+                font-size: 0.82rem;
+            }
+
+            .auth-logo-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 1.3rem;
+            }
+
+            .form-input {
+                padding: 12px 14px;
+                font-size: 0.92rem;
+                min-height: 48px; /* touch target */
+            }
+
+            .btn {
+                padding: 13px 20px;
+                min-height: 48px; /* touch target */
+            }
+
+            /* --- CALL OVERLAY --- */
+            .call-modal {
+                margin: 16px;
+                padding: 28px 22px;
+                width: calc(100% - 32px);
+                max-width: 360px;
+            }
+
+            .call-modal-avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 1.3rem;
+            }
+
+            .call-modal h3 {
+                font-size: 1.1rem;
+            }
+
+            .call-modal-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .call-modal-actions .btn {
+                width: 100%;
+                padding: 14px 24px;
+            }
+
+            /* --- TOASTS --- */
+            .toast-container {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+            }
+
+            .toast {
+                max-width: 100%;
+                padding: 12px 16px;
+                font-size: 0.84rem;
+            }
+
+            /* --- RIGHT PANEL SECTIONS --- */
+            .right-panel {
+                padding: 16px;
+            }
+
+            .video-call-controls {
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .vault-dropzone {
+                padding: 24px 16px;
+            }
+
+            /* --- MOBILE BOTTOM NAV --- */
+            .mobile-bottom-nav {
+                display: block;
+            }
+
+            /* --- SAFE AREA INSETS --- */
+            .topbar {
+                padding-top: calc(10px + env(safe-area-inset-top, 0px));
+            }
+
+            .mobile-bottom-nav {
+                padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+            }
+        }
+
+        /* Extra small phones */
+        @media (max-width: 360px) {
+            .brand-text { display: none; }
+
+            .auth-card {
+                padding: 24px 18px;
+            }
+
+            .mobile-nav-tab {
+                padding: 6px 10px;
+                font-size: 0.62rem;
+            }
         }
 
         /* ================================================
@@ -1360,6 +1814,9 @@
         </div>
     </div>
 
+    <!-- Sidebar Backdrop Overlay -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeAllSidebars()"></div>
+
     <!-- App Wrapper -->
     <div class="app-wrapper">
 
@@ -1393,6 +1850,10 @@
                     <p>End-to-End Secure Communications Node</p>
                 </div>
                 <div class="auth-divider"></div>
+                <div class="signin-prompt-banner" id="signin-prompt">
+                    <span class="prompt-icon">🔔</span>
+                    <span class="prompt-text"><strong>Sign in</strong> to receive secure calls, messages, and real-time notifications from your team.</span>
+                </div>
                 <div class="form-group">
                     <label class="form-label" for="username">Codename</label>
                     <input class="form-input" type="text" id="username" placeholder="Enter your codename" autocomplete="username">
@@ -1518,6 +1979,27 @@
 
             </aside>
 
+        <!-- Mobile Bottom Nav Bar -->
+        <nav class="mobile-bottom-nav hidden" id="mobile-bottom-nav">
+            <div class="mobile-bottom-nav-inner">
+                <button class="mobile-nav-tab" id="nav-tab-agents" onclick="switchMobileTab('agents')">
+                    <span class="nav-icon">👥</span>
+                    <span>Agents</span>
+                    <span class="nav-badge" id="nav-badge-agents"></span>
+                </button>
+                <button class="mobile-nav-tab active" id="nav-tab-chat" onclick="switchMobileTab('chat')">
+                    <span class="nav-icon">💬</span>
+                    <span>Chat</span>
+                    <span class="nav-badge" id="nav-badge-chat"></span>
+                </button>
+                <button class="mobile-nav-tab" id="nav-tab-tools" onclick="switchMobileTab('tools')">
+                    <span class="nav-icon">🛠</span>
+                    <span>Tools</span>
+                    <span class="nav-badge" id="nav-badge-tools"></span>
+                </button>
+            </div>
+        </nav>
+
         </div>
     </div>
 
@@ -1535,6 +2017,9 @@
         let incomingCallData = null; // { senderSocketId, offer, senderUsername }
         let callTimerInterval = null;
         let callStartTime = null;
+        let ringtoneOscillator = null;
+        let ringtoneGain = null;
+        let ringtoneAudioCtx = null;
 
         const rtcConfig = {
             iceServers: [
@@ -1542,6 +2027,98 @@
                 { urls: 'stun:stun1.l.google.com:19302' }
             ]
         };
+
+        // ================================================
+        // BROWSER NOTIFICATIONS
+        // ================================================
+        function requestNotificationPermission() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission().then(perm => {
+                    if (perm === 'granted') {
+                        showToast('Notifications enabled! You\'ll be alerted for messages and calls.', 'success');
+                    }
+                });
+            }
+        }
+
+        function showBrowserNotification(title, body, options = {}) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                // Show for calls always, messages only when tab is hidden
+                if (!options.urgent && !document.hidden) return null;
+                
+                const notification = new Notification(title, {
+                    body,
+                    icon: '/icons/icon-192.png',
+                    badge: '/icons/icon-192.png',
+                    vibrate: [200, 100, 200],
+                    tag: options.tag || 'stealth-relay-' + Date.now(),
+                    requireInteraction: options.urgent || false,
+                    ...options
+                });
+                notification.onclick = () => {
+                    window.focus();
+                    notification.close();
+                };
+                // Auto-close non-urgent after 6s
+                if (!options.urgent) {
+                    setTimeout(() => notification.close(), 6000);
+                }
+                return notification;
+            }
+            return null;
+        }
+
+        // ================================================
+        // INCOMING CALL RINGTONE (Web Audio API)
+        // ================================================
+        function startRingtone() {
+            try {
+                if (ringtoneOscillator) return; // Already ringing
+                ringtoneAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                ringtoneGain = ringtoneAudioCtx.createGain();
+                ringtoneGain.gain.value = 0.15;
+                ringtoneGain.connect(ringtoneAudioCtx.destination);
+
+                // Create a two-tone ringtone pattern
+                function playRingCycle() {
+                    if (!ringtoneAudioCtx || ringtoneAudioCtx.state === 'closed') return;
+                    
+                    const osc1 = ringtoneAudioCtx.createOscillator();
+                    osc1.type = 'sine';
+                    osc1.frequency.value = 440;
+                    osc1.connect(ringtoneGain);
+                    osc1.start();
+                    osc1.stop(ringtoneAudioCtx.currentTime + 0.4);
+
+                    const osc2 = ringtoneAudioCtx.createOscillator();
+                    osc2.type = 'sine';
+                    osc2.frequency.value = 520;
+                    osc2.connect(ringtoneGain);
+                    osc2.start(ringtoneAudioCtx.currentTime + 0.5);
+                    osc2.stop(ringtoneAudioCtx.currentTime + 0.9);
+                }
+
+                playRingCycle();
+                // Repeat the ring every 2 seconds
+                ringtoneOscillator = setInterval(() => {
+                    playRingCycle();
+                }, 2000);
+            } catch (e) {
+                console.warn('Ringtone failed:', e);
+            }
+        }
+
+        function stopRingtone() {
+            if (ringtoneOscillator) {
+                clearInterval(ringtoneOscillator);
+                ringtoneOscillator = null;
+            }
+            if (ringtoneAudioCtx && ringtoneAudioCtx.state !== 'closed') {
+                ringtoneAudioCtx.close().catch(() => {});
+                ringtoneAudioCtx = null;
+            }
+            ringtoneGain = null;
+        }
 
         // ================================================
         // TOAST NOTIFICATIONS
@@ -1611,6 +2188,10 @@
             document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('topbar-user').classList.add('hidden');
             document.getElementById('btn-logout').classList.add('hidden');
+            // Hide mobile bottom nav
+            const mobileNav = document.getElementById('mobile-bottom-nav');
+            if (mobileNav) mobileNav.classList.add('hidden');
+            closeAllSidebars();
             const statusEl = document.getElementById('sys-status');
             statusEl.className = 'status-indicator offline';
             document.getElementById('status-text').textContent = 'DISCONNECTED';
@@ -1631,6 +2212,10 @@
         function showDashboard(socketId) {
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
+
+            // Show mobile bottom nav
+            const mobileNav = document.getElementById('mobile-bottom-nav');
+            if (mobileNav) mobileNav.classList.remove('hidden');
 
             const statusEl = document.getElementById('sys-status');
             statusEl.className = 'status-indicator online';
@@ -1653,6 +2238,9 @@
 
             // Load vault files
             loadVaultFiles();
+
+            // Request notification permission
+            requestNotificationPermission();
         }
 
         // ================================================
@@ -1672,6 +2260,18 @@
 
             socket.on('receive_message', (data) => {
                 appendMessage(data.sender, data.content, false, data.timestamp);
+                // Browser notification for incoming messages
+                showBrowserNotification(
+                    `${data.sender}`,
+                    data.content,
+                    { tag: 'msg-' + Date.now() }
+                );
+                // Show badge on mobile chat tab if not active
+                const chatBadge = document.getElementById('nav-badge-chat');
+                const chatTab = document.getElementById('nav-tab-chat');
+                if (chatBadge && chatTab && !chatTab.classList.contains('active')) {
+                    chatBadge.classList.add('visible');
+                }
             });
 
             socket.on('online-users', (users) => {
@@ -1681,6 +2281,12 @@
             // WebRTC signaling
             socket.on('video-offer', (data) => {
                 showIncomingCall(data.senderSocketId, data.offer, data.senderUsername);
+                // Urgent browser notification for incoming calls
+                showBrowserNotification(
+                    'Incoming Call',
+                    `${data.senderUsername || 'Unknown Agent'} is calling you...`,
+                    { tag: 'call-incoming', urgent: true }
+                );
             });
 
             socket.on('video-answer', async (data) => {
@@ -1933,6 +2539,9 @@
             const initials = (senderUsername || '?').substring(0, 2).toUpperCase();
             document.getElementById('call-modal-avatar').textContent = initials;
             document.getElementById('call-modal-name').textContent = senderUsername || 'Unknown Agent';
+
+            // Start ringtone
+            startRingtone();
         }
 
         async function acceptIncomingCall() {
@@ -1940,6 +2549,7 @@
             const { senderSocketId, offer } = incomingCallData;
 
             document.getElementById('call-overlay').classList.remove('active');
+            stopRingtone();
 
             try {
                 await setupMediaDevices();
@@ -1974,6 +2584,7 @@
             if (!incomingCallData) return;
             socket.emit('video-reject', { targetSocketId: incomingCallData.senderSocketId });
             document.getElementById('call-overlay').classList.remove('active');
+            stopRingtone();
             incomingCallData = null;
         }
 
@@ -2060,6 +2671,7 @@
                 clearInterval(callTimerInterval);
                 callTimerInterval = null;
             }
+            stopRingtone();
         }
 
         function startCallTimer() {
@@ -2111,11 +2723,61 @@
         }
 
         // ================================================
-        // MOBILE SIDEBAR TOGGLE
+        // MOBILE SIDEBAR & BOTTOM NAV
         // ================================================
         function toggleSidebar(side) {
-            const el = document.getElementById(side === 'left' ? 'sidebar-left' : 'sidebar-right');
-            el.classList.toggle('mobile-open');
+            const leftSidebar = document.getElementById('sidebar-left');
+            const rightSidebar = document.getElementById('sidebar-right');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            const target = side === 'left' ? leftSidebar : rightSidebar;
+            const other = side === 'left' ? rightSidebar : leftSidebar;
+
+            // Close the other sidebar if open
+            if (other) other.classList.remove('mobile-open');
+
+            // Toggle the target sidebar
+            if (target) {
+                const isOpening = !target.classList.contains('mobile-open');
+                target.classList.toggle('mobile-open');
+                
+                if (isOpening) {
+                    backdrop.classList.add('active');
+                } else {
+                    backdrop.classList.remove('active');
+                }
+            }
+        }
+
+        function closeAllSidebars() {
+            const leftSidebar = document.getElementById('sidebar-left');
+            const rightSidebar = document.getElementById('sidebar-right');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            if (leftSidebar) leftSidebar.classList.remove('mobile-open');
+            if (rightSidebar) rightSidebar.classList.remove('mobile-open');
+            if (backdrop) backdrop.classList.remove('active');
+        }
+
+        function switchMobileTab(tab) {
+            // Update active tab styling
+            document.querySelectorAll('.mobile-nav-tab').forEach(t => t.classList.remove('active'));
+            const activeTab = document.getElementById(`nav-tab-${tab}`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                // Clear badge when tab is activated
+                const badge = activeTab.querySelector('.nav-badge');
+                if (badge) badge.classList.remove('visible');
+            }
+
+            if (tab === 'agents') {
+                closeAllSidebars();
+                toggleSidebar('left');
+            } else if (tab === 'tools') {
+                closeAllSidebars();
+                toggleSidebar('right');
+            } else {
+                // 'chat' — close all sidebars, show center panel
+                closeAllSidebars();
+            }
         }
 
         // ================================================
@@ -2145,9 +2807,17 @@
                 // Check if token is still valid (not expired)
                 if (decoded.exp && decoded.exp * 1000 > Date.now()) {
                     currentUser = decoded;
+                    // Show reconnecting state
+                    const statusEl = document.getElementById('sys-status');
+                    statusEl.className = 'status-indicator offline';
+                    document.getElementById('status-text').textContent = 'RECONNECTING…';
+                    const btn = document.getElementById('btn-login');
+                    btn.textContent = 'Reconnecting…';
+                    btn.disabled = true;
                     initSocketConnection(token);
                 } else {
                     localStorage.removeItem('secure_token');
+                    showToast('Session expired — please sign in again to receive calls and messages.', 'warning', 6000);
                 }
             }
         })();
