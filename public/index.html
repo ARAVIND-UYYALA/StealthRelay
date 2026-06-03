@@ -1213,6 +1213,8 @@
             text-align: center;
             box-shadow: var(--shadow-lg), 0 0 60px rgba(99, 130, 255, 0.08);
             animation: callModalIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         @keyframes callModalIn {
@@ -2298,7 +2300,14 @@
                 showBrowserNotification(
                     'Incoming Call',
                     `${data.senderUsername || 'Unknown Agent'} is calling you...`,
-                    { tag: 'call-incoming', urgent: true }
+                    { 
+                        tag: 'call-incoming', 
+                        urgent: true,
+                        actions: [
+                            { action: 'accept', title: '✓ Answer' },
+                            { action: 'reject', title: '✕ Decline' }
+                        ]
+                    }
                 );
             });
 
@@ -2842,6 +2851,16 @@
             navigator.serviceWorker.register('/sw.js')
                 .then((reg) => console.log('Service Worker registered:', reg.scope))
                 .catch((err) => console.warn('Service Worker registration failed:', err));
+                
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'CALL_ACTION') {
+                    if (event.data.action === 'accept') {
+                        acceptIncomingCall();
+                    } else if (event.data.action === 'reject') {
+                        rejectIncomingCall();
+                    }
+                }
+            });
         }
     </script>
 </body>

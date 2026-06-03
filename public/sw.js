@@ -50,17 +50,28 @@ self.addEventListener('fetch', (event) => {
 // Handle notification clicks
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
+  
+  const action = event.action; // 'accept' or 'reject'
+
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-      // Check if there is already a window/tab open with the target URL
+      let clientToFocus = null;
       for (let i = 0; i < windowClients.length; i++) {
         const client = windowClients[i];
-        if (client.url.includes(self.registration.scope) && 'focus' in client) {
-          return client.focus();
+        if (client.url.includes(self.registration.scope)) {
+          clientToFocus = client;
+          break;
         }
       }
-      // If not, open a new window
-      if (clients.openWindow) {
+
+      if (clientToFocus) {
+        if ('focus' in clientToFocus) clientToFocus.focus();
+        
+        // Tell the client which action was clicked
+        if (action) {
+          clientToFocus.postMessage({ type: 'CALL_ACTION', action: action });
+        }
+      } else if (clients.openWindow) {
         return clients.openWindow('/');
       }
     })
