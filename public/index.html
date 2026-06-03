@@ -2040,12 +2040,12 @@
             }
         }
 
-        function showBrowserNotification(title, body, options = {}) {
+        async function showBrowserNotification(title, body, options = {}) {
             if ('Notification' in window && Notification.permission === 'granted') {
                 // Show for calls always, messages only when tab is hidden
                 if (!options.urgent && !document.hidden) return null;
                 
-                const notification = new Notification(title, {
+                const notifOptions = {
                     body,
                     icon: '/icons/icon-192.png',
                     badge: '/icons/icon-192.png',
@@ -2053,7 +2053,21 @@
                     tag: options.tag || 'stealth-relay-' + Date.now(),
                     requireInteraction: options.urgent || false,
                     ...options
-                });
+                };
+
+                if ('serviceWorker' in navigator) {
+                    try {
+                        const registration = await navigator.serviceWorker.ready;
+                        await registration.showNotification(title, notifOptions);
+                        // Auto-close non-urgent SW notifications is handled by the browser
+                        return;
+                    } catch (e) {
+                        console.warn('SW notification failed, falling back', e);
+                    }
+                }
+
+                // Fallback for desktop browsers without SW notification support
+                const notification = new Notification(title, notifOptions);
                 notification.onclick = () => {
                     window.focus();
                     notification.close();
