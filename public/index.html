@@ -2021,6 +2021,7 @@
         let ringtoneOscillator = null;
         let ringtoneGain = null;
         let ringtoneAudioCtx = null;
+        let pendingIceCandidates = []; // Queue for ICE candidates received before RTCPeerConnection is ready
 
         const rtcConfig = {
             iceServers: [
@@ -2314,16 +2315,27 @@
             socket.on('video-answer', async (data) => {
                 if (peerConnection) {
                     await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+                    // Process any ICE candidates that arrived before the answer
+                    while (pendingIceCandidates.length > 0) {
+                        try {
+                            await peerConnection.addIceCandidate(new RTCIceCandidate(pendingIceCandidates.shift()));
+                        } catch (e) {
+                            console.error('ICE candidate error:', e);
+                        }
+                    }
                 }
             });
 
             socket.on('ice-candidate', async (data) => {
-                if (peerConnection) {
+                if (peerConnection && peerConnection.remoteDescription) {
                     try {
                         await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
                     } catch (e) {
                         console.error('ICE candidate error:', e);
                     }
+                } else {
+                    // Queue candidate if connection or remote description isn't ready yet
+                    pendingIceCandidates.push(data.candidate);
                 }
             });
 
@@ -2587,6 +2599,16 @@
 
             try {
                 await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+                
+                // Process any ICE candidates that arrived while waiting for user to click Accept
+                while (pendingIceCandidates.length > 0) {
+                    try {
+                        await peerConnection.addIceCandidate(new RTCIceCandidate(pendingIceCandidates.shift()));
+                    } catch (e) {
+                        console.error('ICE candidate error:', e);
+                    }
+                }
+
                 const answer = await peerConnection.createAnswer();
                 await peerConnection.setLocalDescription(answer);
                 socket.emit('video-answer', { targetSocketId: senderSocketId, answer });
@@ -2694,6 +2716,7 @@
                 callTimerInterval = null;
             }
             stopRingtone();
+            pendingIceCandidates = []; // Clear the queue
         }
 
         function startCallTimer() {
