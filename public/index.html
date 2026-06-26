@@ -998,1870 +998,457 @@
             width: 100%;
             aspect-ratio: 4/3;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-        }
-
-        .video-placeholder-icon {
-            font-size: 1.5rem;
-            opacity: 0.4;
-        }
-
-        .video-call-controls {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .video-call-controls .btn {
-            flex: 1;
-        }
-
-        .call-status {
-            text-align: center;
-            padding: 8px;
-            font-size: 0.82rem;
-            color: var(--accent-green);
-            font-weight: 600;
-            display: none;
-        }
-
-        .call-status.active {
-            display: block;
-            animation: callPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes callPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-
-        /* --- FILE VAULT --- */
-        .vault-dropzone {
-            border: 2px dashed var(--border-subtle);
-            border-radius: var(--radius-md);
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition-base);
-            background: var(--bg-input);
-        }
-
-        .vault-dropzone:hover,
-        .vault-dropzone.dragover {
-            border-color: var(--accent-purple);
-            background: var(--accent-purple-soft);
-        }
-
-        .vault-dropzone-icon {
-            font-size: 1.5rem;
-            margin-bottom: 6px;
-            opacity: 0.6;
-        }
-
-        .vault-dropzone p {
-            font-size: 0.82rem;
-            color: var(--text-muted);
-        }
-
-        .vault-dropzone .browse-text {
-            color: var(--accent-purple);
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .vault-selected-file {
-            display: none;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-subtle);
+            background: var(--bg-base);
             border-radius: var(--radius-sm);
-            margin-top: 10px;
-            font-size: 0.84rem;
-        }
-
-        .vault-selected-file.show {
-            display: flex;
-        }
-
-        .vault-file-icon {
-            font-size: 1.2rem;
-        }
-
-        .vault-file-name {
-            flex: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            color: var(--text-primary);
-        }
-
-        .vault-file-size {
             color: var(--text-muted);
-            font-size: 0.76rem;
-            flex-shrink: 0;
-        }
-
-        .vault-file-remove {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 1rem;
-            padding: 0;
-            transition: var(--transition-fast);
-        }
-
-        .vault-file-remove:hover {
-            color: var(--accent-red);
-        }
-
-        .vault-files-list {
-            margin-top: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .vault-file-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-sm);
-            font-size: 0.8rem;
-            transition: var(--transition-fast);
-        }
-
-        .vault-file-item:hover {
-            border-color: var(--border-active);
-        }
-
-        .vault-file-item a {
-            color: var(--accent-purple);
-            text-decoration: none;
-            font-weight: 500;
-            flex: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .vault-file-item a:hover {
-            text-decoration: underline;
-        }
-
-        .vault-file-item .file-size {
-            color: var(--text-muted);
-            font-size: 0.72rem;
-            flex-shrink: 0;
-        }
-
-        /* --- ADMIN PANEL --- */
-        .admin-section {
-            display: none;
-        }
-
-        .admin-section.visible {
-            display: block;
-        }
-
-        .admin-section .form-input {
-            margin-bottom: 10px;
-            padding: 10px 14px;
-            font-size: 0.88rem;
-        }
-
-        /* ================================================
-           INCOMING CALL OVERLAY
-           ================================================ */
-        .call-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: rgba(6, 8, 15, 0.85);
-            backdrop-filter: blur(20px);
-            align-items: center;
-            justify-content: center;
-        }
-
-        .call-overlay.active {
-            display: flex;
-            animation: overlayIn 0.3s ease;
-        }
-
-        @keyframes overlayIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .call-modal {
-            background: var(--bg-surface);
-            backdrop-filter: blur(24px);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-xl);
-            padding: 40px 48px;
-            text-align: center;
-            box-shadow: var(--shadow-lg), 0 0 60px rgba(99, 130, 255, 0.08);
-            animation: callModalIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        @keyframes callModalIn {
-            from { opacity: 0; transform: scale(0.9) translateY(20px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        .call-modal-avatar {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            background: var(--gradient-brand);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: white;
-            margin: 0 auto 16px;
-            animation: callRing 1.5s ease-in-out infinite;
-        }
-
-        @keyframes callRing {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(99, 130, 255, 0.4); }
-            50% { box-shadow: 0 0 0 16px rgba(99, 130, 255, 0); }
-        }
-
-        .call-modal h3 {
-            font-size: 1.2rem;
-            margin-bottom: 4px;
-        }
-
-        .call-modal p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 28px;
-        }
-
-        .call-modal-actions {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-        }
-
-        .call-modal-actions .btn {
-            padding: 14px 32px;
-            border-radius: var(--radius-full);
-            font-size: 0.95rem;
-        }
-
-        /* ================================================
-           SIDEBAR BACKDROP OVERLAY
-           ================================================ */
-        .sidebar-backdrop {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 199;
-            background: rgba(6, 8, 15, 0.6);
-            backdrop-filter: blur(4px);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-
-        .sidebar-backdrop.active {
-            display: block;
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        /* ================================================
-           SIGN-IN PROMPT BANNER
-           ================================================ */
-        .signin-prompt-banner {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 18px;
-            background: linear-gradient(135deg, rgba(99, 130, 255, 0.08), rgba(167, 139, 250, 0.08));
-            border: 1px solid rgba(99, 130, 255, 0.15);
-            border-radius: var(--radius-md);
-            margin-bottom: 24px;
-            animation: bannerPulse 3s ease-in-out infinite;
-        }
-
-        .signin-prompt-banner .prompt-icon {
-            font-size: 1.3rem;
-            animation: bellRing 2s ease-in-out infinite;
-            flex-shrink: 0;
-        }
-
-        @keyframes bellRing {
-            0%, 100% { transform: rotate(0deg); }
-            10% { transform: rotate(14deg); }
-            20% { transform: rotate(-12deg); }
-            30% { transform: rotate(8deg); }
-            40% { transform: rotate(-4deg); }
-            50%, 100% { transform: rotate(0deg); }
-        }
-
-        @keyframes bannerPulse {
-            0%, 100% { border-color: rgba(99, 130, 255, 0.15); }
-            50% { border-color: rgba(99, 130, 255, 0.35); }
-        }
-
-        .signin-prompt-banner .prompt-text {
-            font-size: 0.82rem;
-            color: var(--text-secondary);
-            line-height: 1.4;
-        }
-
-        .signin-prompt-banner .prompt-text strong {
-            color: var(--accent-blue);
-        }
-
-        /* ================================================
-           MOBILE BOTTOM NAV BAR
-           ================================================ */
-        .mobile-bottom-nav {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 300;
-            background: rgba(8, 12, 24, 0.92);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border-subtle);
-            padding: 6px 0;
-            padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
-        }
-
-        .mobile-bottom-nav-inner {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        .mobile-nav-tab {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
-            padding: 6px 16px;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 0.68rem;
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-            transition: var(--transition-fast);
-            position: relative;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
-        }
-
-        .mobile-nav-tab .nav-icon {
-            font-size: 1.25rem;
-            transition: var(--transition-fast);
-        }
-
-        .mobile-nav-tab.active {
-            color: var(--accent-blue);
-        }
-
-        .mobile-nav-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 24px;
-            height: 3px;
-            background: var(--gradient-brand);
-            border-radius: 3px 3px 0 0;
-        }
-
-        .mobile-nav-tab:active {
-            transform: scale(0.92);
-        }
-
-        .mobile-nav-tab .nav-badge {
-            position: absolute;
-            top: 2px;
-            right: 8px;
-            width: 8px;
-            height: 8px;
-            background: var(--accent-red);
-            border-radius: 50%;
-            border: 2px solid rgba(8, 12, 24, 0.92);
-            display: none;
-        }
-
-        .mobile-nav-tab .nav-badge.visible {
-            display: block;
-            animation: pulse-dot 2s ease-in-out infinite;
-        }
-
-        /* ================================================
-           INCOMING CALL RINGTONE INDICATOR
-           ================================================ */
-        .ringtone-indicator {
-            display: none;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: rgba(52, 211, 153, 0.08);
-            border: 1px solid rgba(52, 211, 153, 0.2);
-            border-radius: var(--radius-full);
-            font-size: 0.78rem;
-            color: var(--accent-green);
-            font-weight: 600;
-            animation: ringtoneFlash 1s ease-in-out infinite;
-        }
-
-        .ringtone-indicator.active {
-            display: inline-flex;
-        }
-
-        @keyframes ringtoneFlash {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* ================================================
-           MOBILE TOGGLE (topbar hamburger buttons)
-           ================================================ */
-        .mobile-toggle {
-            display: none;
-            width: 36px;
-            height: 36px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-subtle);
-            background: var(--bg-elevated);
-            color: var(--text-secondary);
-            cursor: pointer;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-        }
-
-        /* ================================================
-           RESPONSIVE — DESKTOP (≥ 1025px)
-           ================================================ */
-        @media (min-width: 1025px) {
-            .mobile-toggle { display: none !important; }
-            .mobile-bottom-nav { display: none !important; }
-            .sidebar-backdrop { display: none !important; }
-        }
-
-        /* ================================================
-           RESPONSIVE — TABLET (769px – 1024px)
-           ================================================ */
-        @media (max-width: 1024px) and (min-width: 769px) {
-            .main-content {
-                grid-template-columns: 240px 1fr;
-            }
-
-            .sidebar-right {
-                display: none;
-                position: fixed;
-                top: 68px;
-                bottom: 0;
-                right: 0;
-                width: 320px;
-                z-index: 200;
-                transform: translateX(100%);
-                transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-            }
-
-            .sidebar-right.mobile-open {
-                display: flex;
-                transform: translateX(0);
-            }
-
-            .sidebar-left {
-                display: flex;
-            }
-
-            .mobile-toggle#toggle-left-sidebar { display: none !important; }
-            .mobile-toggle#toggle-right-sidebar { display: flex !important; }
-
-            .topbar {
-                padding: 14px 20px;
-            }
-
-            .brand-text {
-                font-size: 1.05rem;
-            }
-
-            .chat-area {
-                padding: 16px 20px;
-            }
-
-            .auth-card {
-                max-width: 400px;
-                padding: 36px 32px;
-            }
-        }
-
-        /* ================================================
-           RESPONSIVE — MOBILE (≤ 768px)
-           ================================================ */
-        @media (max-width: 768px) {
-            /* --- TOPBAR --- */
-            .topbar {
-                padding: 10px 14px;
-                gap: 8px;
-            }
-
-            .brand-text {
-                font-size: 0.95rem;
-            }
-
-            .topbar-status {
-                gap: 8px;
-            }
-
-            .status-indicator {
-                padding: 4px 10px;
-                font-size: 0.7rem;
-            }
-
-            .topbar-user {
-                display: none !important;
-            }
-
-            .btn-logout {
-                padding: 5px 10px;
-                font-size: 0.72rem;
-            }
-
-            .mobile-toggle {
-                display: flex !important;
-                width: 34px;
-                height: 34px;
-            }
-
-            /* --- MAIN CONTENT --- */
-            .main-content {
-                grid-template-columns: 1fr;
-                padding-bottom: 64px; /* space for bottom nav */
-            }
-
-            /* --- SIDEBARS AS SLIDE-IN DRAWERS --- */
-            .sidebar-left,
-            .sidebar-right {
-                display: none;
-                position: fixed;
-                top: 56px;
-                bottom: 64px; /* above bottom nav */
-                width: 85vw;
-                max-width: 320px;
-                z-index: 200;
-                transform: translateX(-100%);
-                transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-                background: rgba(8, 12, 24, 0.95);
-                backdrop-filter: blur(20px);
-            }
-
-            .sidebar-right {
-                transform: translateX(100%);
-                right: 0;
-                left: auto;
-            }
-
-            .sidebar-left.mobile-open,
-            .sidebar-right.mobile-open {
-                display: flex;
-                transform: translateX(0);
-            }
-
-            /* --- CENTER PANEL --- */
-            .center-panel {
-                height: calc(100vh - 56px - 64px); /* topbar + bottom nav */
-            }
-
-            .panel-header {
-                padding: 12px 16px;
-            }
-
-            .panel-header h2 {
-                font-size: 0.9rem;
-            }
-
-            .chat-area {
-                padding: 12px 14px;
-                gap: 5px;
-            }
-
-            .msg-bubble {
-                max-width: 85%;
-                padding: 9px 13px;
-                font-size: 0.88rem;
-            }
-
-            /* --- CHAT INPUT --- */
-            .chat-input-area {
-                padding: 10px 14px;
-                padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-            }
-
-            .chat-input-wrapper {
-                padding: 3px 3px 3px 14px;
-            }
-
-            .chat-input-wrapper input {
-                font-size: 0.9rem;
-                padding: 11px 0;
-                min-height: 44px; /* touch target */
-            }
-
-            .chat-send-btn {
-                width: 44px;
-                height: 44px;
-                font-size: 1.1rem;
-            }
-
-            /* --- AUTH SCREEN --- */
-            .auth-screen {
-                padding: 16px;
-                min-height: calc(100vh - 56px);
-                align-items: flex-start;
-                padding-top: 10vh;
-            }
-
-            .auth-card {
-                max-width: 100%;
-                padding: 28px 22px;
-                border-radius: var(--radius-lg);
-            }
-
-            .auth-logo h1 {
-                font-size: 1.35rem;
-            }
-
-            .auth-logo p {
-                font-size: 0.82rem;
-            }
-
-            .auth-logo-icon {
-                width: 48px;
-                height: 48px;
-                font-size: 1.3rem;
-            }
-
-            .form-input {
-                padding: 12px 14px;
-                font-size: 0.92rem;
-                min-height: 48px; /* touch target */
-            }
-
-            .btn {
-                padding: 13px 20px;
-                min-height: 48px; /* touch target */
-            }
-
-            /* --- CALL OVERLAY --- */
-            .call-modal {
-                margin: 16px;
-                padding: 28px 22px;
-                width: calc(100% - 32px);
-                max-width: 360px;
-            }
-
-            .call-modal-avatar {
-                width: 60px;
-                height: 60px;
-                font-size: 1.3rem;
-            }
-
-            .call-modal h3 {
-                font-size: 1.1rem;
-            }
-
-            .call-modal-actions {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .call-modal-actions .btn {
-                width: 100%;
-                padding: 14px 24px;
-            }
-
-            /* --- TOASTS --- */
-            .toast-container {
-                top: 10px;
-                right: 10px;
-                left: 10px;
-            }
-
-            .toast {
-                max-width: 100%;
-                padding: 12px 16px;
-                font-size: 0.84rem;
-            }
-
-            /* --- RIGHT PANEL SECTIONS --- */
-            .right-panel {
-                padding: 16px;
-            }
-
-            .video-call-controls {
-                flex-direction: column;
-                gap: 6px;
-            }
-
-            .vault-dropzone {
-                padding: 24px 16px;
-            }
-
-            /* --- MOBILE BOTTOM NAV --- */
-            .mobile-bottom-nav {
-                display: block;
-            }
-
-            /* --- SAFE AREA INSETS --- */
-            .topbar {
-                padding-top: calc(10px + env(safe-area-inset-top, 0px));
-            }
-
-            .mobile-bottom-nav {
-                padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
-            }
-        }
-
-        /* Extra small phones */
-        @media (max-width: 360px) {
-            .brand-text { display: none; }
-
-            .auth-card {
-                padding: 24px 18px;
-            }
-
-            .mobile-nav-tab {
-                padding: 6px 10px;
-                font-size: 0.62rem;
-            }
-        }
-
-        /* ================================================
-           UTILITY / SCROLLBAR
-           ================================================ */
-        .hidden { display: none !important; }
-
-        .user-list::-webkit-scrollbar { width: 4px; }
-        .user-list::-webkit-scrollbar-track { background: transparent; }
-        .user-list::-webkit-scrollbar-thumb {
-            background: var(--border-subtle);
-            border-radius: 10px;
-        }
-
-        .upload-progress {
-            height: 3px;
-            background: var(--bg-input);
-            border-radius: 2px;
-            margin-top: 10px;
-            overflow: hidden;
-            display: none;
-        }
-
-        .upload-progress.active {
-            display: block;
-        }
-
-        .upload-progress-bar {
-            height: 100%;
-            background: var(--gradient-brand);
-            border-radius: 2px;
-            width: 0%;
-            transition: width 0.3s ease;
+            font-size: 0.85rem;
         }
     </style>
 </head>
 <body>
-
-    <!-- Animated Background -->
     <div class="bg-mesh"></div>
     <div class="grid-overlay"></div>
+    <div class="toast-container" id="toastContainer"></div>
 
-    <!-- Toast Container -->
-    <div class="toast-container" id="toast-container"></div>
-
-    <!-- Incoming Call Overlay -->
-    <div class="call-overlay" id="call-overlay">
-        <div class="call-modal">
-            <div class="call-modal-avatar" id="call-modal-avatar">?</div>
-            <h3 id="call-modal-name">Incoming Call</h3>
-            <p>Incoming video uplink request…</p>
-            <div class="call-modal-actions">
-                <button class="btn btn-success" id="btn-accept-call" onclick="acceptIncomingCall()">✓ Accept</button>
-                <button class="btn btn-danger" id="btn-reject-call" onclick="rejectIncomingCall()">✕ Decline</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- App Wrapper -->
-    <div class="app-wrapper">
-        <!-- Sidebar Backdrop Overlay -->
-        <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeAllSidebars()"></div>
-
-        <!-- Top Bar -->
-        <header class="topbar">
+    <div class="app-wrapper" id="appWrapper">
+        <!-- TOP BAR -->
+        <div class="topbar">
             <div class="topbar-brand">
-                <button class="mobile-toggle" id="toggle-left-sidebar" onclick="toggleSidebar('left')">☰</button>
-                <div class="brand-icon">SR</div>
-                <span class="brand-text">Stealth Relay</span>
+                <div class="brand-icon">🔐</div>
+                <div class="brand-text">Stealth Relay</div>
             </div>
             <div class="topbar-status">
-                <div class="status-indicator offline" id="sys-status">
-                    <span class="status-dot"></span>
-                    <span id="status-text">DISCONNECTED</span>
+                <div class="status-indicator online" id="statusIndicator">
+                    <div class="status-dot"></div>
+                    <span>Online</span>
                 </div>
-                <div class="topbar-user hidden" id="topbar-user">
-                    <div class="user-avatar" id="topbar-avatar">?</div>
-                    <span id="topbar-username">—</span>
-                </div>
-                <button class="btn-logout hidden" id="btn-logout" onclick="logout()">Logout</button>
-                <button class="mobile-toggle" id="toggle-right-sidebar" onclick="toggleSidebar('right')">⚙</button>
             </div>
-        </header>
+            <div class="topbar-user">
+                <div class="user-avatar" id="topbarAvatar">?</div>
+                <span id="topbarUsername">User</span>
+                <button class="btn-logout" id="logoutBtn">Logout</button>
+            </div>
+        </div>
 
         <!-- AUTH SCREEN -->
-        <div class="auth-screen" id="auth-screen">
+        <div class="auth-screen" id="authScreen">
             <div class="auth-card">
                 <div class="auth-logo">
                     <div class="auth-logo-icon">🔐</div>
                     <h1>Stealth Relay</h1>
-                    <p>End-to-End Secure Communications Node</p>
+                    <p>Secure Global Communication</p>
                 </div>
                 <div class="auth-divider"></div>
-                <div class="signin-prompt-banner" id="signin-prompt">
-                    <span class="prompt-icon">🔔</span>
-                    <span class="prompt-text"><strong>Sign in</strong> to receive secure calls, messages, and real-time notifications from your team.</span>
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-input" id="usernameInput" placeholder="Enter username">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="username">Codename</label>
-                    <input class="form-input" type="text" id="username" placeholder="Enter your codename" autocomplete="username">
+                    <label class="form-label">Passcode</label>
+                    <input type="password" class="form-input" id="passcodeInput" placeholder="Enter passcode">
                 </div>
-                <div class="form-group">
-                    <label class="form-label" for="passcode">Passcode</label>
-                    <input class="form-input" type="password" id="passcode" placeholder="Enter your passcode" autocomplete="current-password" onkeypress="if(event.key==='Enter') login()">
-                </div>
-                <button class="btn btn-primary btn-full" id="btn-login" onclick="login()" style="margin-top: 8px;">
-                    Authenticate →
-                </button>
+                <button class="btn btn-primary btn-full" id="loginBtn">Connect</button>
             </div>
         </div>
 
-        <!-- DASHBOARD -->
-        <div class="main-content hidden" id="dashboard">
-
+        <!-- MAIN CONTENT -->
+        <div class="main-content" id="mainContent" style="display: none;">
             <!-- LEFT SIDEBAR: Online Users -->
-            <aside class="sidebar-left" id="sidebar-left">
+            <div class="sidebar-left">
                 <div class="sidebar-header">
-                    <h3>
-                        <span>Online Agents</span>
-                        <span class="online-count" id="online-count">0</span>
-                    </h3>
+                    <h3>👥 Online <span class="online-count" id="onlineCount">0</span></h3>
                 </div>
-                <div class="user-list" id="user-list">
-                    <!-- Populated dynamically -->
-                </div>
-            </aside>
+                <div class="user-list" id="userList"></div>
+            </div>
 
-            <!-- CENTER: Chat -->
-            <main class="center-panel">
+            <!-- CENTER PANEL: Chat -->
+            <div class="center-panel">
                 <div class="panel-header">
-                    <h2>
-                        <span class="panel-header-icon">💬</span>
-                        Encrypted Channel
-                    </h2>
+                    <h2><span class="panel-header-icon">💬</span>Chat</h2>
                 </div>
-                <div class="chat-area" id="chat-window">
-                    <div class="chat-empty" id="chat-empty">
-                        <div class="chat-empty-icon">🔒</div>
-                        <p>Encrypted channel is active</p>
-                        <p style="font-size: 0.78rem; color: var(--text-muted);">Messages are end-to-end secured</p>
+                <div class="chat-area" id="chatArea">
+                    <div class="chat-empty">
+                        <div class="chat-empty-icon">💭</div>
+                        <p>No messages yet. Start a conversation!</p>
                     </div>
                 </div>
                 <div class="chat-input-area">
                     <div class="chat-input-wrapper">
-                        <input type="text" id="chat-input" placeholder="Type a secure message…" onkeypress="if(event.key==='Enter') sendMessage()" autocomplete="off">
-                        <button class="chat-send-btn" id="btn-send" onclick="sendMessage()" title="Send message">➤</button>
+                        <input type="text" id="messageInput" placeholder="Type a message..." autocomplete="off">
+                        <button class="chat-send-btn" id="sendBtn">↗️</button>
                     </div>
                 </div>
-            </main>
-
-            <!-- RIGHT SIDEBAR: Video + Vault + Admin -->
-            <aside class="sidebar-right" id="sidebar-right">
-
-                <!-- Video Call Panel -->
-                <div class="right-panel">
-                    <div class="right-panel-title"><span class="icon">📹</span> Video Uplink</div>
-                    <div class="video-container" id="video-container">
-                        <div class="video-wrapper">
-                            <video id="localVideo" autoplay playsinline muted style="display:none;"></video>
-                            <div class="video-placeholder" id="local-placeholder">
-                                <div class="video-placeholder-icon">📷</div>
-                                <span>Local Feed</span>
-                            </div>
-                            <span class="video-label" style="display:none;" id="local-label">You</span>
-                        </div>
-                        <div class="video-wrapper">
-                            <video id="remoteVideo" autoplay playsinline style="display:none;"></video>
-                            <div class="video-placeholder" id="remote-placeholder">
-                                <div class="video-placeholder-icon">📡</div>
-                                <span>Remote Feed</span>
-                            </div>
-                            <span class="video-label" style="display:none;" id="remote-label">Remote</span>
-                        </div>
-                    </div>
-                    <div class="call-status" id="call-status">● Connected</div>
-                    <div class="video-call-controls">
-                        <button class="btn btn-danger btn-sm hidden" id="btn-hangup" onclick="hangupCall()">✕ Hang Up</button>
-                    </div>
-                </div>
-
-                <!-- File Vault Panel -->
-                <div class="right-panel">
-                    <div class="right-panel-title"><span class="icon">🗄️</span> Secure Vault</div>
-                    <div class="vault-dropzone" id="vault-dropzone" onclick="document.getElementById('vault-file').click()">
-                        <div class="vault-dropzone-icon">📁</div>
-                        <p>Drop file here or <span class="browse-text">browse</span></p>
-                        <p style="font-size: 0.72rem; margin-top: 4px;">Max 50 MB</p>
-                    </div>
-                    <input type="file" id="vault-file" style="display:none;" onchange="onFileSelected()">
-
-                    <div class="vault-selected-file" id="vault-selected">
-                        <span class="vault-file-icon">📄</span>
-                        <span class="vault-file-name" id="vault-file-name">—</span>
-                        <span class="vault-file-size" id="vault-file-size">—</span>
-                        <button class="vault-file-remove" onclick="clearSelectedFile()" title="Remove">✕</button>
-                    </div>
-
-                    <div class="upload-progress" id="upload-progress">
-                        <div class="upload-progress-bar" id="upload-progress-bar"></div>
-                    </div>
-
-                    <button class="btn btn-accent btn-full btn-sm" id="btn-upload" onclick="uploadToVault()" style="margin-top: 10px;">
-                        ↑ Upload & Encrypt
-                    </button>
-
-                    <div class="vault-files-list" id="vault-files-list">
-                        <!-- Populated dynamically -->
-                    </div>
-                </div>
-
-                <!-- Admin Panel -->
-                <div class="right-panel admin-section" id="admin-panel">
-                    <div class="right-panel-title"><span class="icon">👤</span> Admin — Provision</div>
-                    <input class="form-input" type="text" id="new-user-name" placeholder="New codename" autocomplete="off">
-                    <input class="form-input" type="password" id="new-user-pass" placeholder="New passcode" autocomplete="new-password">
-                    <button class="btn btn-secondary btn-full btn-sm" onclick="registerNewUser()">
-                        + Provision Personnel
-                    </button>
-                </div>
-
-            </aside>
-
-        <!-- Mobile Bottom Nav Bar -->
-        <nav class="mobile-bottom-nav hidden" id="mobile-bottom-nav">
-            <div class="mobile-bottom-nav-inner">
-                <button class="mobile-nav-tab" id="nav-tab-agents" onclick="switchMobileTab('agents')">
-                    <span class="nav-icon">👥</span>
-                    <span>Agents</span>
-                    <span class="nav-badge" id="nav-badge-agents"></span>
-                </button>
-                <button class="mobile-nav-tab active" id="nav-tab-chat" onclick="switchMobileTab('chat')">
-                    <span class="nav-icon">💬</span>
-                    <span>Chat</span>
-                    <span class="nav-badge" id="nav-badge-chat"></span>
-                </button>
-                <button class="mobile-nav-tab" id="nav-tab-tools" onclick="switchMobileTab('tools')">
-                    <span class="nav-icon">🛠</span>
-                    <span>Tools</span>
-                    <span class="nav-badge" id="nav-badge-tools"></span>
-                </button>
             </div>
-        </nav>
 
+            <!-- RIGHT SIDEBAR: Video + Vault -->
+            <div class="sidebar-right">
+                <!-- VIDEO SECTION -->
+                <div class="right-panel">
+                    <div class="right-panel-title"><span class="icon">📹</span>Video</div>
+                    <div class="video-container">
+                        <div class="video-wrapper">
+                            <video id="localVideo" autoplay muted playsinline></video>
+                            <div class="video-label">You</div>
+                        </div>
+                        <div class="video-wrapper">
+                            <video id="remoteVideo" autoplay playsinline></video>
+                            <div class="video-label">Remote</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // ================================================
-        // GLOBAL STATE
-        // ================================================
-        const BACKEND_URL = window.location.origin;
+        // ==========================================
+        // WEBRTC & MEDIA CONFIGURATION
+        // ==========================================
         let socket = null;
         let localStream = null;
+        let remoteStream = null;
         let peerConnection = null;
         let currentUser = null;
-        let callActive = false;
-        let callTargetSocketId = null;
-        let incomingCallData = null; // { senderSocketId, offer, senderUsername }
-        let callTimerInterval = null;
-        let callStartTime = null;
-        let ringtoneOscillator = null;
-        let ringtoneGain = null;
-        let ringtoneAudioCtx = null;
+        let activeCall = null;
 
-        const rtcConfig = {
+        const ICE_SERVERS = {
             iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' }
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' }
             ]
         };
 
-        // ================================================
-        // BROWSER NOTIFICATIONS
-        // ================================================
-        function requestNotificationPermission() {
-            if ('Notification' in window && Notification.permission === 'default') {
-                Notification.requestPermission().then(perm => {
-                    if (perm === 'granted') {
-                        showToast('Notifications enabled! You\'ll be alerted for messages and calls.', 'success');
-                    }
-                });
+        const MEDIA_CONSTRAINTS = {
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: true
+            },
+            video: {
+                width: { ideal: 1280 },
+                height: { ideal: 720 },
+                facingMode: 'user'
             }
-        }
+        };
 
-        async function showBrowserNotification(title, body, options = {}) {
-            if ('Notification' in window && Notification.permission === 'granted') {
-                // Show for calls always, messages only when tab is hidden
-                if (!options.urgent && !document.hidden) return null;
-                
-                const notifOptions = {
-                    body,
-                    icon: '/icons/icon-192.png',
-                    badge: '/icons/icon-192.png',
-                    vibrate: [200, 100, 200],
-                    tag: options.tag || 'stealth-relay-' + Date.now(),
-                    requireInteraction: options.urgent || false,
-                    ...options
-                };
-
-                if ('serviceWorker' in navigator) {
-                    try {
-                        const registration = await navigator.serviceWorker.ready;
-                        await registration.showNotification(title, notifOptions);
-                        // Auto-close non-urgent SW notifications is handled by the browser
-                        return;
-                    } catch (e) {
-                        console.warn('SW notification failed, falling back', e);
-                    }
-                }
-
-                // Fallback for desktop browsers without SW notification support
-                const notification = new Notification(title, notifOptions);
-                notification.onclick = () => {
-                    window.focus();
-                    notification.close();
-                };
-                // Auto-close non-urgent after 6s
-                if (!options.urgent) {
-                    setTimeout(() => notification.close(), 6000);
-                }
-                return notification;
-            }
-            return null;
-        }
-
-        // ================================================
-        // INCOMING CALL RINGTONE (Web Audio API)
-        // ================================================
-        function startRingtone() {
-            try {
-                if (ringtoneOscillator) return; // Already ringing
-                ringtoneAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                ringtoneGain = ringtoneAudioCtx.createGain();
-                ringtoneGain.gain.value = 0.15;
-                ringtoneGain.connect(ringtoneAudioCtx.destination);
-
-                // Create a two-tone ringtone pattern
-                function playRingCycle() {
-                    if (!ringtoneAudioCtx || ringtoneAudioCtx.state === 'closed') return;
-                    
-                    const osc1 = ringtoneAudioCtx.createOscillator();
-                    osc1.type = 'sine';
-                    osc1.frequency.value = 440;
-                    osc1.connect(ringtoneGain);
-                    osc1.start();
-                    osc1.stop(ringtoneAudioCtx.currentTime + 0.4);
-
-                    const osc2 = ringtoneAudioCtx.createOscillator();
-                    osc2.type = 'sine';
-                    osc2.frequency.value = 520;
-                    osc2.connect(ringtoneGain);
-                    osc2.start(ringtoneAudioCtx.currentTime + 0.5);
-                    osc2.stop(ringtoneAudioCtx.currentTime + 0.9);
-                }
-
-                playRingCycle();
-                // Repeat the ring every 2 seconds
-                ringtoneOscillator = setInterval(() => {
-                    playRingCycle();
-                }, 2000);
-            } catch (e) {
-                console.warn('Ringtone failed:', e);
-            }
-        }
-
-        function stopRingtone() {
-            if (ringtoneOscillator) {
-                clearInterval(ringtoneOscillator);
-                ringtoneOscillator = null;
-            }
-            if (ringtoneAudioCtx && ringtoneAudioCtx.state !== 'closed') {
-                ringtoneAudioCtx.close().catch(() => {});
-                ringtoneAudioCtx = null;
-            }
-            ringtoneGain = null;
-        }
-
-        // ================================================
-        // TOAST NOTIFICATIONS
-        // ================================================
-        function showToast(message, type = 'info', duration = 4000) {
-            const container = document.getElementById('toast-container');
-            const icons = { success: '✓', error: '✕', info: 'ℹ', warning: '⚠' };
-
+        // ==========================================
+        // UTILITY FUNCTIONS
+        // ==========================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <span class="toast-icon">${icons[type] || icons.info}</span>
-                <span>${message}</span>
-            `;
+            const icons = { success: '✓', error: '✕', info: 'ℹ', warning: '⚠' };
+            toast.innerHTML = `<span class="toast-icon">${icons[type]}</span><span>${message}</span>`;
             container.appendChild(toast);
-
             setTimeout(() => {
                 toast.classList.add('removing');
                 setTimeout(() => toast.remove(), 300);
-            }, duration);
+            }, 4000);
         }
 
-        // ================================================
-        // AUTH
-        // ================================================
-        async function login() {
-            const username = document.getElementById('username').value.trim();
-            const passcode = document.getElementById('passcode').value;
+        // ==========================================
+        // MEDIA STREAM MANAGEMENT
+        // ==========================================
+        async function startLocalStream() {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia(MEDIA_CONSTRAINTS);
+                const localVideo = document.getElementById('localVideo');
+                localVideo.srcObject = localStream;
+                console.log('✓ Local stream started successfully');
+                showToast('Camera & microphone enabled', 'success');
+            } catch (error) {
+                console.error('✗ Error accessing media:', error);
+                if (error.name === 'NotAllowedError') {
+                    showToast('Camera/microphone access denied. Please check browser permissions.', 'error');
+                } else if (error.name === 'NotFoundError') {
+                    showToast('No camera or microphone found. Please check your devices.', 'error');
+                } else {
+                    showToast('Error accessing media devices: ' + error.message, 'error');
+                }
+            }
+        }
+
+        function stopLocalStream() {
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                localStream = null;
+            }
+        }
+
+        // ==========================================
+        // WEBRTC PEER CONNECTION
+        // ==========================================
+        async function createPeerConnection() {
+            try {
+                peerConnection = new RTCPeerConnection(ICE_SERVERS);
+
+                // Add local stream tracks
+                if (localStream) {
+                    localStream.getTracks().forEach(track => {
+                        peerConnection.addTrack(track, localStream);
+                    });
+                }
+
+                // Handle remote stream
+                peerConnection.ontrack = (event) => {
+                    console.log('✓ Remote track received:', event.track.kind);
+                    remoteStream = event.streams[0];
+                    const remoteVideo = document.getElementById('remoteVideo');
+                    remoteVideo.srcObject = remoteStream;
+                    showToast('Remote stream connected', 'success');
+                };
+
+                // Handle ICE candidates
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate && activeCall) {
+                        socket.emit('ice-candidate', {
+                            targetSocketId: activeCall,
+                            candidate: event.candidate
+                        });
+                    }
+                };
+
+                // Handle connection state changes
+                peerConnection.onconnectionstatechange = () => {
+                    console.log('Connection state:', peerConnection.connectionState);
+                    if (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected') {
+                        showToast('Connection lost', 'warning');
+                        closePeerConnection();
+                    }
+                };
+
+                console.log('✓ Peer connection created');
+            } catch (error) {
+                console.error('Error creating peer connection:', error);
+                showToast('Error creating peer connection', 'error');
+            }
+        }
+
+        function closePeerConnection() {
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
+            }
+            const remoteVideo = document.getElementById('remoteVideo');
+            remoteVideo.srcObject = null;
+            activeCall = null;
+        }
+
+        async function initiateCall(targetSocketId) {
+            try {
+                activeCall = targetSocketId;
+                await createPeerConnection();
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                socket.emit('video-offer', {
+                    targetSocketId: targetSocketId,
+                    offer: offer
+                });
+                console.log('✓ Video offer sent');
+            } catch (error) {
+                console.error('Error initiating call:', error);
+                showToast('Error initiating call', 'error');
+            }
+        }
+
+        // ==========================================
+        // SOCKET.IO EVENT HANDLERS
+        // ==========================================
+        function setupSocketHandlers() {
+            // Incoming video offer
+            socket.on('video-offer', async (data) => {
+                try {
+                    console.log('Received video offer from:', data.senderUsername);
+                    activeCall = data.senderSocketId;
+                    await createPeerConnection();
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+                    const answer = await peerConnection.createAnswer();
+                    await peerConnection.setLocalDescription(answer);
+                    socket.emit('video-answer', {
+                        targetSocketId: data.senderSocketId,
+                        answer: answer
+                    });
+                    console.log('✓ Video answer sent');
+                    showToast('Call from ' + data.senderUsername, 'info');
+                } catch (error) {
+                    console.error('Error handling video offer:', error);
+                }
+            });
+
+            // Incoming video answer
+            socket.on('video-answer', async (data) => {
+                try {
+                    console.log('Received video answer');
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+                    console.log('✓ Remote description set');
+                } catch (error) {
+                    console.error('Error handling video answer:', error);
+                }
+            });
+
+            // Incoming ICE candidate
+            socket.on('ice-candidate', async (data) => {
+                try {
+                    if (peerConnection && data.candidate) {
+                        await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+                    }
+                } catch (error) {
+                    console.error('Error adding ICE candidate:', error);
+                }
+            });
+
+            // Video call rejected
+            socket.on('video-rejected', (data) => {
+                showToast(data.senderUsername + ' rejected the call', 'warning');
+                closePeerConnection();
+            });
+
+            // Video call ended
+            socket.on('video-hangup', () => {
+                showToast('Call ended', 'info');
+                closePeerConnection();
+            });
+
+            // Online users list
+            socket.on('online-users', (users) => {
+                updateUserList(users);
+            });
+
+            // Chat message
+            socket.on('receive_message', (data) => {
+                addMessage(data.sender, data.content, 'incoming');
+            });
+        }
+
+        // ==========================================
+        // AUTH & UI HANDLERS
+        // ==========================================
+        function updateUserList(users) {
+            const userList = document.getElementById('userList');
+            const count = document.getElementById('onlineCount');
+            userList.innerHTML = '';
+            count.textContent = users.length;
+
+            users.forEach(user => {
+                const userItem = document.createElement('div');
+                userItem.className = 'user-item' + (user.username === currentUser.username ? ' user-item-self' : '');
+                userItem.innerHTML = `
+                    <div class="user-item-avatar">${user.username.charAt(0).toUpperCase()}</div>
+                    <div class="user-item-info">
+                        <div class="user-item-name">${user.username}</div>
+                        <div class="user-item-role">${user.role}</div>
+                    </div>
+                    ${user.username !== currentUser.username ? `
+                    <div class="user-item-actions">
+                        <button class="btn-call" onclick="initiateCall('${user.socketId}')">📞</button>
+                    </div>
+                    ` : ''}
+                `;
+                userList.appendChild(userItem);
+            });
+        }
+
+        function addMessage(sender, content, type) {
+            const chatArea = document.getElementById('chatArea');
+            if (chatArea.querySelector('.chat-empty')) {
+                chatArea.innerHTML = '';
+            }
+            const msg = document.createElement('div');
+            msg.className = 'msg-bubble msg-' + type;
+            msg.innerHTML = `
+                <div class="msg-sender-name">${sender}</div>
+                <div class="msg-text">${content}</div>
+                <div class="msg-time">${new Date().toLocaleTimeString()}</div>
+            `;
+            chatArea.appendChild(msg);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+            const username = document.getElementById('usernameInput').value;
+            const passcode = document.getElementById('passcodeInput').value;
 
             if (!username || !passcode) {
-                showToast('Please enter both codename and passcode.', 'warning');
+                showToast('Please enter username and passcode', 'warning');
                 return;
             }
 
-            const btn = document.getElementById('btn-login');
-            btn.textContent = 'Authenticating…';
-            btn.disabled = true;
-
             try {
-                const response = await fetch(`${BACKEND_URL}/login`, {
+                const response = await fetch('/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, passcode })
                 });
                 const data = await response.json();
 
-                if (!response.ok) throw new Error(data.error || 'Authentication failed.');
-
-                localStorage.setItem('secure_token', data.token);
-                currentUser = parseJwt(data.token);
-                showToast('Authentication successful. Welcome back.', 'success');
-                initSocketConnection(data.token);
-            } catch (err) {
-                showToast(err.message, 'error');
-                btn.textContent = 'Authenticate →';
-                btn.disabled = false;
-            }
-        }
-
-        function logout() {
-            if (callActive) hangupCall();
-            if (socket) socket.disconnect();
-            localStorage.removeItem('secure_token');
-            currentUser = null;
-            socket = null;
-            document.getElementById('auth-screen').classList.remove('hidden');
-            document.getElementById('dashboard').classList.add('hidden');
-            document.getElementById('topbar-user').classList.add('hidden');
-            document.getElementById('btn-logout').classList.add('hidden');
-            // Hide mobile bottom nav
-            const mobileNav = document.getElementById('mobile-bottom-nav');
-            if (mobileNav) mobileNav.classList.add('hidden');
-            closeAllSidebars();
-            const statusEl = document.getElementById('sys-status');
-            statusEl.className = 'status-indicator offline';
-            document.getElementById('status-text').textContent = 'DISCONNECTED';
-            document.getElementById('btn-login').textContent = 'Authenticate →';
-            document.getElementById('btn-login').disabled = false;
-            showToast('Session terminated.', 'info');
-        }
-
-        function parseJwt(token) {
-            try {
-                return JSON.parse(atob(token.split('.')[1]));
-            } catch { return {}; }
-        }
-
-        // ================================================
-        // DASHBOARD ACTIVATION
-        // ================================================
-        function showDashboard(socketId) {
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
-
-            // Show mobile bottom nav
-            const mobileNav = document.getElementById('mobile-bottom-nav');
-            if (mobileNav) mobileNav.classList.remove('hidden');
-
-            const statusEl = document.getElementById('sys-status');
-            statusEl.className = 'status-indicator online';
-            document.getElementById('status-text').textContent = 'SECURE';
-
-            // Topbar user info
-            const topbarUser = document.getElementById('topbar-user');
-            topbarUser.classList.remove('hidden');
-            document.getElementById('btn-logout').classList.remove('hidden');
-
-            const initials = (currentUser.username || '?').substring(0, 2).toUpperCase();
-            document.getElementById('topbar-avatar').textContent = initials;
-            document.getElementById('topbar-username').textContent = currentUser.username;
-
-            // Show admin panel if admin
-            const adminPanel = document.getElementById('admin-panel');
-            if (currentUser.role === 'admin') {
-                adminPanel.classList.add('visible');
-            }
-
-            // Load vault files
-            loadVaultFiles();
-
-            // Request notification permission
-            requestNotificationPermission();
-        }
-
-        // ================================================
-        // SOCKET CONNECTION & EVENTS
-        // ================================================
-        function initSocketConnection(token) {
-            if (socket) socket.disconnect();
-            socket = io(BACKEND_URL, { query: { token } });
-
-            socket.on('connect', () => showDashboard(socket.id));
-
-            socket.on('disconnect', () => {
-                const statusEl = document.getElementById('sys-status');
-                statusEl.className = 'status-indicator offline';
-                document.getElementById('status-text').textContent = 'RECONNECTING…';
-            });
-
-            socket.on('receive_message', (data) => {
-                appendMessage(data.sender, data.content, false, data.timestamp);
-                // Browser notification for incoming messages
-                showBrowserNotification(
-                    `${data.sender}`,
-                    data.content,
-                    { tag: 'msg-' + Date.now() }
-                );
-                // Show badge on mobile chat tab if not active
-                const chatBadge = document.getElementById('nav-badge-chat');
-                const chatTab = document.getElementById('nav-tab-chat');
-                if (chatBadge && chatTab && !chatTab.classList.contains('active')) {
-                    chatBadge.classList.add('visible');
-                }
-            });
-
-            socket.on('online-users', (users) => {
-                renderOnlineUsers(users);
-            });
-
-            // WebRTC signaling
-            socket.on('video-offer', (data) => {
-                showIncomingCall(data.senderSocketId, data.offer, data.senderUsername);
-                // Urgent browser notification for incoming calls
-                showBrowserNotification(
-                    'Incoming Call',
-                    `${data.senderUsername || 'Unknown Agent'} is calling you...`,
-                    { 
-                        tag: 'call-incoming', 
-                        urgent: true,
-                        actions: [
-                            { action: 'accept', title: '✓ Answer' },
-                            { action: 'reject', title: '✕ Decline' }
-                        ]
-                    }
-                );
-            });
-
-            socket.on('video-answer', async (data) => {
-                if (peerConnection) {
-                    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
-                }
-            });
-
-            socket.on('ice-candidate', async (data) => {
-                if (peerConnection) {
-                    try {
-                        await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
-                    } catch (e) {
-                        console.error('ICE candidate error:', e);
-                    }
-                }
-            });
-
-            socket.on('video-rejected', (data) => {
-                showToast(`${data.senderUsername || 'User'} declined the call.`, 'warning');
-                cleanupCall();
-            });
-
-            socket.on('video-hangup', () => {
-                showToast('Call ended by remote peer.', 'info');
-                cleanupCall();
-            });
-        }
-
-        // ================================================
-        // ONLINE USERS RENDERING
-        // ================================================
-        function renderOnlineUsers(users) {
-            const list = document.getElementById('user-list');
-            const count = document.getElementById('online-count');
-            count.textContent = users.length;
-
-            list.innerHTML = users.map(u => {
-                const initials = u.username.substring(0, 2).toUpperCase();
-                const isSelf = socket && u.socketId === socket.id;
-                return `
-                    <div class="user-item ${isSelf ? 'user-item-self' : ''}">
-                        <div class="user-item-avatar">${initials}</div>
-                        <div class="user-item-info">
-                            <div class="user-item-name">${escapeHtml(u.username)}</div>
-                            <div class="user-item-role">${u.role || 'personnel'}</div>
-                        </div>
-                        <div class="user-item-actions">
-                            <button class="btn-call" title="Video call ${escapeHtml(u.username)}" onclick="startVideoCall('${u.socketId}')">📞</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // ================================================
-        // CHAT
-        // ================================================
-        let firstMessage = true;
-
-        function sendMessage() {
-            const input = document.getElementById('chat-input');
-            const text = input.value.trim();
-            if (!text || !socket) return;
-
-            socket.emit('send_message', JSON.stringify({ content: text }));
-            appendMessage('You', text, true);
-            input.value = '';
-            input.focus();
-        }
-
-        function appendMessage(sender, text, isSelf, timestamp) {
-            if (firstMessage) {
-                const empty = document.getElementById('chat-empty');
-                if (empty) empty.remove();
-                firstMessage = false;
-            }
-
-            const win = document.getElementById('chat-window');
-            const time = timestamp ? new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            const bubble = document.createElement('div');
-            bubble.className = `msg-bubble ${isSelf ? 'msg-outgoing' : 'msg-incoming'}`;
-            bubble.innerHTML = `
-                <div class="msg-sender-name">${escapeHtml(sender)}</div>
-                <div class="msg-text">${escapeHtml(text)}</div>
-                <div class="msg-time">${time}</div>
-            `;
-            win.appendChild(bubble);
-            win.scrollTop = win.scrollHeight;
-        }
-
-        // ================================================
-        // FILE VAULT
-        // ================================================
-        // Drag and drop
-        const dropzone = document.getElementById('vault-dropzone');
-        if (dropzone) {
-            dropzone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropzone.classList.add('dragover');
-            });
-            dropzone.addEventListener('dragleave', () => {
-                dropzone.classList.remove('dragover');
-            });
-            dropzone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropzone.classList.remove('dragover');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    document.getElementById('vault-file').files = files;
-                    onFileSelected();
-                }
-            });
-        }
-
-        function onFileSelected() {
-            const fileInput = document.getElementById('vault-file');
-            const selected = document.getElementById('vault-selected');
-            if (fileInput.files[0]) {
-                document.getElementById('vault-file-name').textContent = fileInput.files[0].name;
-                document.getElementById('vault-file-size').textContent = formatFileSize(fileInput.files[0].size);
-                selected.classList.add('show');
-            }
-        }
-
-        function clearSelectedFile() {
-            document.getElementById('vault-file').value = '';
-            document.getElementById('vault-selected').classList.remove('show');
-        }
-
-        async function uploadToVault() {
-            const fileInput = document.getElementById('vault-file');
-            const token = localStorage.getItem('secure_token');
-
-            if (!fileInput.files[0]) {
-                showToast('Please select a file first.', 'warning');
-                return;
-            }
-
-            const progressEl = document.getElementById('upload-progress');
-            const progressBar = document.getElementById('upload-progress-bar');
-            progressEl.classList.add('active');
-            progressBar.style.width = '0%';
-
-            const formData = new FormData();
-            formData.append('file', fileInput.files[0]);
-
-            try {
-                // Simulate progress
-                let progress = 0;
-                const progressInterval = setInterval(() => {
-                    progress = Math.min(progress + Math.random() * 20, 90);
-                    progressBar.style.width = progress + '%';
-                }, 200);
-
-                const response = await fetch(`${BACKEND_URL}/vault/upload`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` },
-                    body: formData
-                });
-                const data = await response.json();
-
-                clearInterval(progressInterval);
-
-                if (!response.ok) throw new Error(data.error);
-
-                progressBar.style.width = '100%';
-                setTimeout(() => {
-                    progressEl.classList.remove('active');
-                    progressBar.style.width = '0%';
-                }, 1000);
-
-                showToast('File encrypted and stored successfully!', 'success');
-                clearSelectedFile();
-                loadVaultFiles();
-            } catch (err) {
-                progressEl.classList.remove('active');
-                showToast(err.message, 'error');
-            }
-        }
-
-        async function loadVaultFiles() {
-            const token = localStorage.getItem('secure_token');
-            const listEl = document.getElementById('vault-files-list');
-
-            try {
-                const response = await fetch(`${BACKEND_URL}/vault/files`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
-
-                if (!response.ok) throw new Error(data.error);
-
-                if (data.files.length === 0) {
-                    listEl.innerHTML = '<p style="font-size: 0.78rem; color: var(--text-muted); text-align: center; padding: 10px;">No files in vault</p>';
+                if (!response.ok) {
+                    showToast(data.error || 'Login failed', 'error');
                     return;
                 }
 
-                listEl.innerHTML = data.files.map(f => `
-                    <div class="vault-file-item">
-                        <span>📄</span>
-                        <a href="${f.downloadLink}?token=${token}" target="_blank" title="${escapeHtml(f.fileName)}">${escapeHtml(f.fileName)}</a>
-                        <span class="file-size">${formatFileSize(f.size)}</span>
-                    </div>
-                `).join('');
-            } catch (err) {
-                console.error('Failed to load vault files:', err);
-            }
-        }
+                currentUser = { username, token: data.token };
+                document.getElementById('topbarUsername').textContent = username;
+                document.getElementById('topbarAvatar').textContent = username.charAt(0).toUpperCase();
+                document.getElementById('authScreen').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'grid';
 
-        // ================================================
-        // VIDEO CALL — WebRTC
-        // ================================================
-        async function startVideoCall(targetSocketId) {
-            if (callActive) {
-                showToast('A call is already in progress.', 'warning');
-                return;
-            }
-
-            callTargetSocketId = targetSocketId;
-
-            try {
-                await setupMediaDevices();
-            } catch (err) {
-                showToast('Camera/mic access denied. Please allow permissions.', 'error');
-                return;
-            }
-
-            setupPeerConnection(targetSocketId);
-
-            try {
-                const offer = await peerConnection.createOffer();
-                await peerConnection.setLocalDescription(offer);
-                socket.emit('video-offer', { targetSocketId, offer });
-                showToast('Calling… waiting for response.', 'info');
-                callActive = true;
-                document.getElementById('btn-hangup').classList.remove('hidden');
-            } catch (err) {
-                showToast('Failed to initiate call.', 'error');
-                cleanupCall();
-            }
-        }
-
-        function showIncomingCall(senderSocketId, offer, senderUsername) {
-            incomingCallData = { senderSocketId, offer, senderUsername };
-            const overlay = document.getElementById('call-overlay');
-            overlay.classList.add('active');
-
-            const initials = (senderUsername || '?').substring(0, 2).toUpperCase();
-            document.getElementById('call-modal-avatar').textContent = initials;
-            document.getElementById('call-modal-name').textContent = senderUsername || 'Unknown Agent';
-
-            // Start ringtone
-            startRingtone();
-        }
-
-        async function acceptIncomingCall() {
-            if (!incomingCallData) return;
-            const { senderSocketId, offer } = incomingCallData;
-
-            document.getElementById('call-overlay').classList.remove('active');
-            stopRingtone();
-
-            try {
-                await setupMediaDevices();
-            } catch (err) {
-                showToast('Camera/mic access denied.', 'error');
-                socket.emit('video-reject', { targetSocketId: senderSocketId });
-                incomingCallData = null;
-                return;
-            }
-
-            setupPeerConnection(senderSocketId);
-            callTargetSocketId = senderSocketId;
-
-            try {
-                await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-                const answer = await peerConnection.createAnswer();
-                await peerConnection.setLocalDescription(answer);
-                socket.emit('video-answer', { targetSocketId: senderSocketId, answer });
-                callActive = true;
-                document.getElementById('btn-hangup').classList.remove('hidden');
-                startCallTimer();
-                showToast('Video uplink established.', 'success');
-            } catch (err) {
-                showToast('Failed to accept call.', 'error');
-                cleanupCall();
-            }
-
-            incomingCallData = null;
-        }
-
-        function rejectIncomingCall() {
-            if (!incomingCallData) return;
-            socket.emit('video-reject', { targetSocketId: incomingCallData.senderSocketId });
-            document.getElementById('call-overlay').classList.remove('active');
-            stopRingtone();
-            incomingCallData = null;
-        }
-
-        async function setupMediaDevices() {
-            if (localStream) return; // Already set up
-            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            const localVideo = document.getElementById('localVideo');
-            localVideo.srcObject = localStream;
-            localVideo.style.display = 'block';
-            document.getElementById('local-placeholder').style.display = 'none';
-            document.getElementById('local-label').style.display = 'block';
-        }
-
-        function setupPeerConnection(targetSocketId) {
-            if (peerConnection) {
-                peerConnection.close();
-            }
-            peerConnection = new RTCPeerConnection(rtcConfig);
-
-            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-
-            peerConnection.ontrack = (e) => {
-                const remoteVideo = document.getElementById('remoteVideo');
-                remoteVideo.srcObject = e.streams[0];
-                remoteVideo.style.display = 'block';
-                document.getElementById('remote-placeholder').style.display = 'none';
-                document.getElementById('remote-label').style.display = 'block';
-                startCallTimer();
-            };
-
-            peerConnection.onicecandidate = (e) => {
-                if (e.candidate) {
-                    socket.emit('ice-candidate', { targetSocketId, candidate: e.candidate });
-                }
-            };
-
-            peerConnection.oniceconnectionstatechange = () => {
-                if (peerConnection.iceConnectionState === 'disconnected' || peerConnection.iceConnectionState === 'failed') {
-                    showToast('Connection lost.', 'warning');
-                    cleanupCall();
-                }
-            };
-        }
-
-        function hangupCall() {
-            if (callTargetSocketId && socket) {
-                socket.emit('video-hangup', { targetSocketId: callTargetSocketId });
-            }
-            showToast('Call ended.', 'info');
-            cleanupCall();
-        }
-
-        function cleanupCall() {
-            if (peerConnection) {
-                peerConnection.close();
-                peerConnection = null;
-            }
-            if (localStream) {
-                localStream.getTracks().forEach(track => track.stop());
-                localStream = null;
-            }
-
-            const localVideo = document.getElementById('localVideo');
-            const remoteVideo = document.getElementById('remoteVideo');
-            localVideo.srcObject = null;
-            localVideo.style.display = 'none';
-            remoteVideo.srcObject = null;
-            remoteVideo.style.display = 'none';
-
-            document.getElementById('local-placeholder').style.display = 'flex';
-            document.getElementById('remote-placeholder').style.display = 'flex';
-            document.getElementById('local-label').style.display = 'none';
-            document.getElementById('remote-label').style.display = 'none';
-
-            document.getElementById('btn-hangup').classList.add('hidden');
-
-            const callStatus = document.getElementById('call-status');
-            callStatus.classList.remove('active');
-
-            callActive = false;
-            callTargetSocketId = null;
-
-            if (callTimerInterval) {
-                clearInterval(callTimerInterval);
-                callTimerInterval = null;
-            }
-            stopRingtone();
-        }
-
-        function startCallTimer() {
-            if (callTimerInterval) return; // Already running
-            callStartTime = Date.now();
-            const callStatus = document.getElementById('call-status');
-            callStatus.classList.add('active');
-
-            callTimerInterval = setInterval(() => {
-                const elapsed = Math.floor((Date.now() - callStartTime) / 1000);
-                const min = String(Math.floor(elapsed / 60)).padStart(2, '0');
-                const sec = String(elapsed % 60).padStart(2, '0');
-                callStatus.textContent = `● Connected — ${min}:${sec}`;
-            }, 1000);
-        }
-
-        // ================================================
-        // ADMIN — REGISTER NEW USER
-        // ================================================
-        async function registerNewUser() {
-            const username = document.getElementById('new-user-name').value.trim();
-            const passcode = document.getElementById('new-user-pass').value;
-            const token = localStorage.getItem('secure_token');
-
-            if (!username || !passcode) {
-                showToast('Codename and passcode are required.', 'warning');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${BACKEND_URL}/register`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ username, passcode })
+                // Connect socket after successful login
+                socket = io({
+                    auth: { token: data.token }
                 });
-                const data = await response.json();
 
-                if (!response.ok) throw new Error(data.error);
+                socket.on('connect', () => {
+                    console.log('✓ Connected to server');
+                    showToast('Connected to Stealth Relay', 'success');
+                    startLocalStream();
+                });
 
-                showToast(data.message, 'success');
-                document.getElementById('new-user-name').value = '';
-                document.getElementById('new-user-pass').value = '';
-            } catch (err) {
-                showToast(err.message, 'error');
+                socket.on('disconnect', () => {
+                    console.log('✗ Disconnected from server');
+                    showToast('Disconnected from server', 'warning');
+                    stopLocalStream();
+                    closePeerConnection();
+                });
+
+                setupSocketHandlers();
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast('Network error during login', 'error');
             }
-        }
+        });
 
-        // ================================================
-        // MOBILE SIDEBAR & BOTTOM NAV
-        // ================================================
-        function toggleSidebar(side) {
-            const leftSidebar = document.getElementById('sidebar-left');
-            const rightSidebar = document.getElementById('sidebar-right');
-            const backdrop = document.getElementById('sidebar-backdrop');
-            const target = side === 'left' ? leftSidebar : rightSidebar;
-            const other = side === 'left' ? rightSidebar : leftSidebar;
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            if (socket) socket.disconnect();
+            stopLocalStream();
+            closePeerConnection();
+            document.getElementById('authScreen').style.display = 'flex';
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('passcodeInput').value = '';
+            currentUser = null;
+            showToast('Logged out', 'info');
+        });
 
-            // Close the other sidebar if open
-            if (other) other.classList.remove('mobile-open');
-
-            // Toggle the target sidebar
-            if (target) {
-                const isOpening = !target.classList.contains('mobile-open');
-                target.classList.toggle('mobile-open');
-                
-                if (isOpening) {
-                    backdrop.classList.add('active');
-                } else {
-                    backdrop.classList.remove('active');
-                }
+        document.getElementById('sendBtn').addEventListener('click', () => {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (message && socket) {
+                socket.emit('send_message', { content: message });
+                addMessage(currentUser.username, message, 'outgoing');
+                input.value = '';
             }
-        }
+        });
 
-        function closeAllSidebars() {
-            const leftSidebar = document.getElementById('sidebar-left');
-            const rightSidebar = document.getElementById('sidebar-right');
-            const backdrop = document.getElementById('sidebar-backdrop');
-            if (leftSidebar) leftSidebar.classList.remove('mobile-open');
-            if (rightSidebar) rightSidebar.classList.remove('mobile-open');
-            if (backdrop) backdrop.classList.remove('active');
-        }
-
-        function switchMobileTab(tab) {
-            // Update active tab styling
-            document.querySelectorAll('.mobile-nav-tab').forEach(t => t.classList.remove('active'));
-            const activeTab = document.getElementById(`nav-tab-${tab}`);
-            if (activeTab) {
-                activeTab.classList.add('active');
-                // Clear badge when tab is activated
-                const badge = activeTab.querySelector('.nav-badge');
-                if (badge) badge.classList.remove('visible');
-            }
-
-            if (tab === 'agents') {
-                closeAllSidebars();
-                toggleSidebar('left');
-            } else if (tab === 'tools') {
-                closeAllSidebars();
-                toggleSidebar('right');
-            } else {
-                // 'chat' — close all sidebars, show center panel
-                closeAllSidebars();
-            }
-        }
-
-        // ================================================
-        // UTILITY FUNCTIONS
-        // ================================================
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 B';
-            const k = 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-        }
-
-        // ================================================
-        // AUTO-LOGIN FROM STORED TOKEN
-        // ================================================
-        (function autoLogin() {
-            const token = localStorage.getItem('secure_token');
-            if (token) {
-                const decoded = parseJwt(token);
-                // Check if token is still valid (not expired)
-                if (decoded.exp && decoded.exp * 1000 > Date.now()) {
-                    currentUser = decoded;
-                    // Show reconnecting state
-                    const statusEl = document.getElementById('sys-status');
-                    statusEl.className = 'status-indicator offline';
-                    document.getElementById('status-text').textContent = 'RECONNECTING…';
-                    const btn = document.getElementById('btn-login');
-                    btn.textContent = 'Reconnecting…';
-                    btn.disabled = true;
-                    initSocketConnection(token);
-                } else {
-                    localStorage.removeItem('secure_token');
-                    showToast('Session expired — please sign in again to receive calls and messages.', 'warning', 6000);
-                }
-            }
-        })();
-
-        // ================================================
-        // PWA SERVICE WORKER REGISTRATION
-        // ================================================
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then((reg) => console.log('Service Worker registered:', reg.scope))
-                .catch((err) => console.warn('Service Worker registration failed:', err));
-                
-            navigator.serviceWorker.addEventListener('message', (event) => {
-                if (event.data && event.data.type === 'CALL_ACTION') {
-                    if (event.data.action === 'accept') {
-                        acceptIncomingCall();
-                    } else if (event.data.action === 'reject') {
-                        rejectIncomingCall();
-                    }
-                }
-            });
-        }
+        document.getElementById('messageInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') document.getElementById('sendBtn').click();
+        });
     </script>
 </body>
 </html>
