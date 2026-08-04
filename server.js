@@ -10,6 +10,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'stealth_relay_fallback_secret_key_123!';
+
 // ==========================================
 // PHASE 3: FILE VAULT STORAGE ENGINE CONFIG
 // ==========================================
@@ -115,7 +117,7 @@ const authenticateToken = (req, res, next) => {
         return res.status(401).json({ error: "Access Denied: Missing security token." });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
         if (err) return res.status(403).json({ error: "Access Denied: Invalid or expired token." });
         req.user = decoded; 
         next();
@@ -178,7 +180,7 @@ app.post('/login', async (req, res) => {
                 username: user.rows[0].username,
                 role: user.rows[0].role 
             },
-            process.env.JWT_SECRET,
+            JWT_SECRET,
             { expiresIn: "24h" }
         );
 
@@ -245,7 +247,7 @@ io.use((socket, next) => {
     const token = socket.handshake.auth.token || socket.handshake.query.token;
     if (!token) return next(new Error("Access Denied: No security token provided."));
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
         if (err) return next(new Error("Access Denied: Invalid or expired token."));
         socket.user = decoded; 
         next();
