@@ -48,8 +48,10 @@ const pool = new Pool({
 });
 
 // Database Connection & Security Lockdown Upgrade
+let dbConnected = false;
 pool.connect()
     .then(async () => {
+        dbConnected = true;
         console.log('Database connection locked in.');
         
         try {
@@ -83,7 +85,20 @@ pool.connect()
             console.error("Schema setup failed:", e.message);
         }
     })
-    .catch(err => console.error('Database connection failed:', err.stack));  
+    .catch(err => {
+        dbConnected = false;
+        console.error('Database connection failed:', err.stack);
+    });
+
+// --- HEALTH CHECK ENDPOINT (for debugging) ---
+app.get('/health', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT NOW()');
+        res.json({ status: 'ok', dbConnected: true, serverTime: result.rows[0].now });
+    } catch (err) {
+        res.status(500).json({ status: 'error', dbConnected: false, error: err.message });
+    }
+});
 
 const server = http.createServer(app);
 
@@ -186,8 +201,8 @@ app.post('/login', async (req, res) => {
 
         res.json({ message: "Login successful.", token: token });
     } catch (err) {
-        console.error(err.message);
-        res.status(500).json({ error: "Server error during authentication execution." });
+        console.error('Login error details:', err.message, err.stack);
+        res.status(500).json({ error: "Server error during authentication execution.", detail: err.message });
     }
 });
 
